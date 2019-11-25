@@ -184,7 +184,7 @@
               <text value="Search By Category"/>
             </properties>
           </component>
-          <component id="27898" class="javax.swing.JComboBox" binding="searchList">
+          <component id="27898" class="javax.swing.JComboBox" binding="searchByCategoryComboBox">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -197,7 +197,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="f5a3a" class="javax.swing.JList" binding="list1" default-binding="true">
+              <component id="f5a3a" class="javax.swing.JList" binding="searchList">
                 <constraints/>
                 <properties/>
               </component>
