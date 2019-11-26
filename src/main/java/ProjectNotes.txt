@@ -54,3 +54,8 @@ ticketInfoByID.setStatus(Ticket.TicketStatus.RESOLVED);
                         ticketListStatusDescription.setText(TicketGUI.ALL_TICKETS);
 
                     }
+
+
+ Get the date? converting the date format
+
+ //TODO NEED to add static popup message box for error message etc

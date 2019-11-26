@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class ListStore {
 
-    private String dbURI;
+    private static String dbURI;
     SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
 
 
@@ -26,13 +26,38 @@ public class ListStore {
     }
 
 
-    public  Vector<Vector> getAllincompleteData() {
+    public static Vector<Vector> getAllincompleteData() {
 
 //TODO need to work on this to get the incomplete Data
+        String sqlQuery = "SELECT * FROM todos WHERE status='INCOMPLETE'";
         try(Connection conn = DriverManager.getConnection(dbURI);
              Statement stat = conn.createStatement()){
 
+            ResultSet rsIncomData = stat.executeQuery(sqlQuery);
             Vector<Vector> vectors = new Vector<>();
+
+            /*
+            Tasks
+Desc
+P
+C
+             */
+
+            while(rsIncomData.next()){
+                String name = rsIncomData.getString("taskName");
+                String desc = rsIncomData.getString("description");
+                int prio = rsIncomData.getInt("priority");
+                String category = rsIncomData.getString("category");
+
+                Vector v = new Vector();
+                v.add(name);
+                v.add(desc);
+                v.add(prio);
+                v.add(category);
+
+                vectors.add(v);
+            }
+
 
             return vectors;
 
@@ -46,17 +71,33 @@ public class ListStore {
 
     }
 
-    public Vector<Vector> getAllcompletedData() {
+    public static Vector<Vector> getAllcompletedData() {
+        String sqlQuery = "SELECT * FROM todos WHERE status='COMPLETED'";
 
         //TODO need to work on this to get all completed data
 
         try(Connection conn = DriverManager.getConnection(dbURI);
             Statement stat = conn.createStatement()){
+            ResultSet rsIncomData = stat.executeQuery(sqlQuery);
 
             Vector<Vector> vectors = new Vector<>();
 
-            return vectors;
+            while(rsIncomData.next()){
+                String name = rsIncomData.getString("taskName");
+                String desc = rsIncomData.getString("description");
+                int prio = rsIncomData.getInt("priority");
+                String category = rsIncomData.getString("category");
 
+                Vector v = new Vector();
+                v.add(name);
+                v.add(desc);
+                v.add(prio);
+                v.add(category);
+
+                vectors.add(v);
+            }
+
+            return vectors;
 
         }catch (SQLException s){
             System.out.println(s);

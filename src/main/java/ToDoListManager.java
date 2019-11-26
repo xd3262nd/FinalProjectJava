@@ -47,6 +47,7 @@ public class ToDoListManager extends JFrame{
 
     protected DefaultListModel<Tasks> searchListModel;
     DefaultComboBoxModel<Integer> priorityListModel;
+    DefaultComboBoxModel <String> categoryListModel;
     protected DefaultTableModel todoModel;
     protected DefaultTableModel completedModel;
     //need to setmodel for the default table model
@@ -83,7 +84,7 @@ public class ToDoListManager extends JFrame{
 //        todoModel = new DefaultTableModel();
 //        completedModel = new DefaultTableModel();
 
-        setUpTable();
+        setUpTable(); //TODO need to make sure the user can not click on the table
         //TODO this should be in the refresh button
         //updateTable();
 
@@ -135,13 +136,19 @@ public class ToDoListManager extends JFrame{
     private void configComboBox() {
 
         int [] index = {1,2,3,4,5};
-        //TODO add a list for the category to add to combobox
+        String [] categoryList = {"PERSONAL", "WORK"};
 
         priorityListModel = new DefaultComboBoxModel<>();
+        categoryListModel = new DefaultComboBoxModel<>();
+
 
         for(int i=0; i<index.length; i++){
 
             priorityListModel.addElement(index[i]);
+        }
+
+        for(int j=0; j<categoryList.length;j++){
+            categoryListModel.addElement(categoryList[j]);
         }
 
 
@@ -149,11 +156,15 @@ public class ToDoListManager extends JFrame{
         //TODO This will need to makesure the user clicked on the priority comboBox
         priorityComboBox.setSelectedIndex(-1);
 
+        categoryComboBox.setModel(categoryListModel);
+        categoryComboBox.setSelectedIndex(-1);
+
         searchByPriorityComboBox.setModel(priorityListModel);
         //TODO This will need to makesure the user clicked on the priority comboBox
         searchByPriorityComboBox.setSelectedIndex(-1);
 
-
+        searchByCategoryComboBox.setModel(categoryListModel);
+        searchByCategoryComboBox.setSelectedIndex(-1);
 
 
 
