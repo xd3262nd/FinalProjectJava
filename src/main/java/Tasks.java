@@ -43,14 +43,14 @@ public class Tasks {
         this.category = cate;
         this.status = status;
     }
-
-    //constructor to be return for the table
-    public Tasks(String name, String desc, int p, TasksCategory cate){
-        this.name = name;
-        this.description = desc;
-        this.priority = p;
-        this.category = cate;
-    }
+//TODO if only need this
+//    //constructor to be return for the table
+//    public Tasks(String name, String desc, int p, TasksCategory cate){
+//        this.name = name;
+//        this.description = desc;
+//        this.priority = p;
+//        this.category = cate;
+//    }
 
 
 

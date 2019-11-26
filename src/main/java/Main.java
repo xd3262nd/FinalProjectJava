@@ -15,6 +15,9 @@ public class Main {
 
     }
 
+    public static void quit(){
+        todoGUI.dispose();
+    }
 
 
 }

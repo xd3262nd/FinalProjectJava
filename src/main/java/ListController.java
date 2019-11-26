@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Vector;
 
 public class ListController {
@@ -8,7 +9,7 @@ public class ListController {
         this.store = store;
     }
 
-    public Vector<Vector> IncompleteData() {
+    protected Vector<Vector> IncompleteData() {
 
         Vector<Vector> incompleteData = ListStore.getAllincompleteData();
 
@@ -16,14 +17,30 @@ public class ListController {
 
     }
 
-    public Vector<Vector> CompletedData() {
+    protected Vector <Vector> CompletedData() {
 
-        Vector<Vector> completedData = ListStore.getAllcompletedData();
+        Vector completedData = ListStore.getAllcompletedData();
 
         return completedData;
 
 
     }
+
+    protected List<Tasks> loadAllTasksFromStore() {
+        List<Tasks> allTasks = ListStore.getAllData();
+        return allTasks;
+
+    }
+
+    protected void quitProgram() {
+       Main.quit();
+    }
+
+    public Vector getColNames() {
+        Vector colNames = ListStore.getColumnNames();
+        return colNames;
+    }
+
 
     //need to update/refresh the todotable and completedtable
 

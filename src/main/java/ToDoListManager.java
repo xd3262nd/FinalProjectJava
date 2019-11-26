@@ -45,6 +45,11 @@ public class ToDoListManager extends JFrame{
     private JTable todoTable;
     private JTable completeTable;
 
+    static final String ALL_TASKS = "Showing all incomplete tasks";
+
+
+
+
     protected DefaultListModel<Tasks> searchListModel;
     DefaultComboBoxModel<Integer> priorityListModel;
     DefaultComboBoxModel <String> categoryListModel;
@@ -61,8 +66,6 @@ public class ToDoListManager extends JFrame{
         this.controller = controller;
 
         setTitle("To-Do Tasks Manager");
-
-
         setContentPane(mainPanel);
         pack();
         setVisible(true);
@@ -108,29 +111,103 @@ public class ToDoListManager extends JFrame{
 
     private void setUpTable() {
 
-        Vector <String> columnNames = new Vector<>();
-        columnNames.add("Tasks");
-        columnNames.add("Description");
-        columnNames.add("Priority");
-        columnNames.add("Category");
+//        Vector <String> columnNames = new Vector<>();
+//        columnNames.add("Tasks");
+//        columnNames.add("Description");
+//        columnNames.add("Priority");
+//        columnNames.add("Category");
+
+        Vector colNames = controller.getColNames();
 
         Vector <Vector> incompletedData = controller.IncompleteData();
 
         Vector <Vector> completedData = controller.CompletedData();
 
-        todoModel = new DefaultTableModel(incompletedData, columnNames);
-        completedModel = new DefaultTableModel(completedData, columnNames);
+        todoModel = new DefaultTableModel(incompletedData, colNames){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        completedModel = new DefaultTableModel(completedData, colNames){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
+        //TODO not sure if needed this one
+        todoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        todoTable.setModel(todoModel);
 
+        completeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        completeTable.setModel(completedModel);
 
     }
     private void updateTable() {
 
+        //TODO refresh button will call on this method
+        Vector colNames = controller.getColNames();
+
+        Vector <Vector> incompletedData = controller.IncompleteData();
+
+        Vector <Vector> completedData = controller.CompletedData();
+
+        todoModel.setDataVector(incompletedData, colNames);
+        completedModel.setDataVector(completedData, colNames);
 
     }
 
 
     private void addListener() {
+
+        priorityComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+
+            }
+        });
+
+
+        //TODO this will be calling the controller to load all tasks and order by status first then the priority.
+        //Then it will print out in the JLIST on searchPanel and change the description on the search Panel
+        //button listener
+        showAllTasks.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+                List<Tasks> allData = controller.loadAllTasksFromStore();
+                setListData(allData);
+
+
+
+            }
+        });
+
+
+        //ToDO this will do on adding the tasks with the new tasks constructor and need to add into DB
+        //Need to have a confirmation messgae that it is added
+        //run thru the controller to load the JTABLE??
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+
+
+    }
+
+    void setListData(List<Tasks> data) {
+
+        searchListModel.clear();
+        if(data != null){
+            for(Tasks t : data){
+                searchListModel.addElement(t);
+            }
+        }
     }
 
     private void configComboBox() {
@@ -167,11 +244,19 @@ public class ToDoListManager extends JFrame{
         searchByCategoryComboBox.setSelectedIndex(-1);
 
 
-
-
-
-
     }
 
+
+    protected void quitProgram(){
+        controller.quitProgram();
+    }
+
+    protected void showMessageDialog(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
+
+    protected String showInputDialog(String question){
+        return JOptionPane.showInputDialog(this, question);
+    }
 
 }
