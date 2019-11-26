@@ -1,0 +1,56 @@
+What is on my Tasks Class:
+1.tasksID; Not null
+2.priority; not null
+3.name; not null
+4.description; not null
+5.dateCreated; QUESTION: Do I need to put as not null
+6.dateCompleted; QUESTION: Do I need to put as not null
+7.status; Not Null
+8.category; Not Null
+
+
+Method I need on my controller:
+
+
+
+Button On GUI:
+Add button
+Refresh
+Completed Selected task
+Show all tasks on JList
+Search by Priority
+search by category
+edit desc for selected task
+
+Need to notes on this:
+searchListDescriptionLabel -- need to change based on the search type (Show all tasks on JList
+                                                                       Search by Priority
+                                                                       search by category)
+
+
+Table need to follow this layout or set up?
+Tasks
+Desc
+P
+C
+
+
+how to update the incomplete status to complete status
+ticketInfoByID.setStatus(Ticket.TicketStatus.RESOLVED);
+
+                    if (!(inputTicketResolve == null)) {
+                        //get the ticket object value
+                        Ticket value = ticketList.getSelectedValue();
+
+                        //get the ticketID based on the Ticket Object
+                        Ticket ticketInfoByID = controller.searchById(value.getTicketID());
+                        ticketInfoByID.setResolution(inputTicketResolve); //null pointer
+                        ticketInfoByID.setDateResolved(new Date());
+                        ticketInfoByID.setStatus(Ticket.TicketStatus.RESOLVED);
+                        controller.updateTicket(ticketInfoByID);
+                        showMessageDialog("Updated the ticket info");
+                        List<Ticket> allData = controller.loadOpenTicketsFromTicketStore();
+                        setListData(allData);
+                        ticketListStatusDescription.setText(TicketGUI.ALL_TICKETS);
+
+                    }

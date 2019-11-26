@@ -3,11 +3,11 @@ import java.util.Date;
 public class Tasks {
 
     enum TasksStatus{
-        Incomplete, Completed
+        INCOMPLETE, COMPLETED
     }
 
     enum TasksCategory{
-        Personal, Work
+        PERSONAL, WORK
     }
 
     private int tasksID;
@@ -29,10 +29,28 @@ public class Tasks {
         this.description = desc;
         this.dateCreated=dateCreated;
         this.priority = p;
-        this.status = TasksStatus.Incomplete;
+        this.status = TasksStatus.INCOMPLETE;
         this.category = cate;
     }
 
+    public Tasks(int id, String name, String desc, Date dateCreated, int p, TasksCategory cate, Date dateCompleted, TasksStatus status ){
+        this.tasksID=id;
+        this.name=name;
+        this.description=desc;
+        this.dateCreated=dateCreated;
+        this.dateCompleted=dateCompleted;
+        this.priority=p;
+        this.category = cate;
+        this.status = status;
+    }
+
+    //constructor to be return for the table
+    public Tasks(String name, String desc, int p, TasksCategory cate){
+        this.name = name;
+        this.description = desc;
+        this.priority = p;
+        this.category = cate;
+    }
 
 
 
@@ -103,7 +121,23 @@ public class Tasks {
 
 
     //create the toString method here - to be printed in the List
-    //TODO might need to change my GUI design
+
+    public String toString(){
+
+        String statement = String.format("ID: %d, Tasks: %s, Description: %s, Priority: %d, Category: %s, Created on: %s. ",
+                this.tasksID, this,name, this.description, this.priority, this.category, this.dateCreated);
+
+        if(dateCompleted !=null && dateCompleted.getTime() !=0){
+            statement += "Completed on: " + dateCompleted;
+        }
+
+        statement += " Status: " + status.name();
+
+        return statement;
+
+
+
+    }
 
 
 
