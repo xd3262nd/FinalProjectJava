@@ -42,4 +42,5 @@ public class ToDoListManager extends JFrame{
     private JButton quitButton;
     private JPanel controlPanel;
     private JButton editButton;
+    private JButton refreshButton;
 }
