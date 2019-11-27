@@ -116,13 +116,13 @@ public class ToDoListManager extends JFrame{
 
     private void setUpTable() {
 
-        Vector <String> colNames = new Vector<>();
-        colNames.add("Tasks");
-        colNames.add("Description");
-        colNames.add("Priority");
-        colNames.add("Category");
+//        Vector <String> colNames = new Vector<>();
+//        colNames.add("Tasks");
+//        colNames.add("Description");
+//        colNames.add("Priority");
+//        colNames.add("Category");
 
-        //Vector colNames = controller.getColNames();
+        Vector colNames = controller.getColNames();
 
         Vector <Vector> incompletedData = controller.IncompleteData();
 
@@ -144,20 +144,22 @@ public class ToDoListManager extends JFrame{
         //TODO not sure if needed this one
         todoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         todoTable.setModel(todoModel);
+        todoTable.setAutoCreateRowSorter(true);
 
         completeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         completeTable.setModel(completedModel);
+        completeTable.setAutoCreateRowSorter(true);
 
     }
     private void updateTable() {
 
         //TODO refresh button will call on this method
-//        Vector colNames = controller.getColNames();
-        Vector <String> colNames = new Vector<>();
-        colNames.add("Tasks");
-        colNames.add("Description");
-        colNames.add("Priority");
-        colNames.add("Category");
+        Vector colNames = controller.getColNames();
+//        Vector <String> colNames = new Vector<>();
+//        colNames.add("Tasks");
+//        colNames.add("Description");
+//        colNames.add("Priority");
+//        colNames.add("Category");
 
         Vector <Vector> incompletedData = controller.IncompleteData();
 
