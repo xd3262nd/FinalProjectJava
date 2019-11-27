@@ -53,6 +53,11 @@ public class ToDoListManager extends JFrame{
     protected DefaultListModel<Tasks> searchListModel;
     DefaultComboBoxModel<Integer> priorityListModel;
     DefaultComboBoxModel <String> categoryListModel;
+
+    DefaultComboBoxModel<Integer> priorityLModel;
+    DefaultComboBoxModel<String> categoryLModel;
+
+
     protected DefaultTableModel todoModel;
     protected DefaultTableModel completedModel;
     //need to setmodel for the default table model
@@ -111,13 +116,13 @@ public class ToDoListManager extends JFrame{
 
     private void setUpTable() {
 
-//        Vector <String> columnNames = new Vector<>();
-//        columnNames.add("Tasks");
-//        columnNames.add("Description");
-//        columnNames.add("Priority");
-//        columnNames.add("Category");
+        Vector <String> colNames = new Vector<>();
+        colNames.add("Tasks");
+        colNames.add("Description");
+        colNames.add("Priority");
+        colNames.add("Category");
 
-        Vector colNames = controller.getColNames();
+        //Vector colNames = controller.getColNames();
 
         Vector <Vector> incompletedData = controller.IncompleteData();
 
@@ -147,7 +152,12 @@ public class ToDoListManager extends JFrame{
     private void updateTable() {
 
         //TODO refresh button will call on this method
-        Vector colNames = controller.getColNames();
+//        Vector colNames = controller.getColNames();
+        Vector <String> colNames = new Vector<>();
+        colNames.add("Tasks");
+        colNames.add("Description");
+        colNames.add("Priority");
+        colNames.add("Category");
 
         Vector <Vector> incompletedData = controller.IncompleteData();
 
@@ -192,6 +202,36 @@ public class ToDoListManager extends JFrame{
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                boolean checkValidation=false;
+                String name = tasksNameText.getText();
+                String desc = descriptionText.getText();
+
+                if(desc==null || desc.isBlank() ||desc.isEmpty()){
+                    showMessageDialog("Missing description");
+                }else if(name ==null|| name.isBlank()||name.isEmpty()){
+                    showMessageDialog("Missing tasks name");
+                }else if(priorityComboBox.getSelectedIndex()<0){
+                    showMessageDialog("Please select a priority level");
+                }else if(categoryComboBox.getSelectedIndex()<0){
+                    showMessageDialog("Please assign a Category for your tasks");
+                }else if(checkValidation =true){
+                    Date dateCreated = new Date();
+                    int priority =priorityComboBox.getItemAt(priorityComboBox.getSelectedIndex());
+                    String categoryTasks = categoryComboBox.getItemAt(categoryComboBox.getSelectedIndex());
+                    Tasks.TasksCategory cat = Tasks.TasksCategory.valueOf(categoryTasks);
+                    Tasks newTasks = new Tasks(name,desc,dateCreated, priority,cat );
+
+                    controller.addTasks(newTasks);
+
+                    //TODO set the field into empty
+
+                    updateTable();
+                }
+
+
+
+
+
 
             }
         });
@@ -218,6 +258,19 @@ public class ToDoListManager extends JFrame{
         priorityListModel = new DefaultComboBoxModel<>();
         categoryListModel = new DefaultComboBoxModel<>();
 
+        priorityLModel = new DefaultComboBoxModel<>();
+        categoryLModel = new DefaultComboBoxModel<>();
+
+        for(int k=0; k<index.length; k++){
+
+            priorityLModel.addElement(index[k]);
+        }
+
+        for(int l=0; l<categoryList.length;l++){
+            categoryLModel.addElement(categoryList[l]);
+        }
+
+
 
         for(int i=0; i<index.length; i++){
 
@@ -236,11 +289,11 @@ public class ToDoListManager extends JFrame{
         categoryComboBox.setModel(categoryListModel);
         categoryComboBox.setSelectedIndex(-1);
 
-        searchByPriorityComboBox.setModel(priorityListModel);
+        searchByPriorityComboBox.setModel(priorityLModel);
         //TODO This will need to makesure the user clicked on the priority comboBox
         searchByPriorityComboBox.setSelectedIndex(-1);
 
-        searchByCategoryComboBox.setModel(categoryListModel);
+        searchByCategoryComboBox.setModel(categoryLModel);
         searchByCategoryComboBox.setSelectedIndex(-1);
 
 

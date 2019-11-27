@@ -1,3 +1,4 @@
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
@@ -39,6 +40,15 @@ public class ListController {
     public Vector getColNames() {
         Vector colNames = ListStore.getColumnNames();
         return colNames;
+    }
+
+    public boolean addTasks(Tasks newTasks) {
+        try{
+            ListStore.add(newTasks);
+            return true;
+        }catch(SQLException s){
+            return false;
+        }
     }
 
 

@@ -171,4 +171,42 @@ C
         columnNames.add("Category");
         return columnNames;
     }
+
+    public static void add(Tasks newTasks) throws SQLException {
+
+        Connection conn = DriverManager.getConnection(dbURI);
+        PreparedStatement pst = conn.prepareStatement("insert into todos values(?,?,?,?,?,?,?)");
+
+        //n, d, p, c, dc, dc, s
+        String name = newTasks.getName();
+        String desc = newTasks.getDescription();
+        int priority = newTasks.getPriority();
+        String category = String.valueOf(newTasks.getCategory());
+
+        Long dateCreatedInt = newTasks.getDateCreated().getTime();
+
+        String status = String.valueOf(newTasks.getStatus());
+
+        pst.setString(1, name);
+        pst.setString(2, desc);
+        pst.setInt(3, priority);
+        pst.setString(4, category);
+        pst.setLong(5, dateCreatedInt);
+        pst.setString(7,status);
+        if(newTasks.getDateCompleted()==null){
+            pst.setLong(6,0);
+        }else{
+            Long dateCompletedInt = newTasks.getDateCompleted().getTime();
+            pst.setLong(6,dateCompletedInt);
+        }
+        pst.execute();
+
+        Statement s = conn.createStatement();
+        ResultSet generateID = s.getGeneratedKeys();
+
+        while(generateID.next()){
+            int rowID = generateID.getInt(1);
+            newTasks.setTasksID(rowID);
+        }
+    }
 }
