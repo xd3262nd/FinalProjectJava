@@ -225,16 +225,23 @@ public class ToDoListManager extends JFrame{
 
                     controller.addTasks(newTasks);
 
-                    //TODO set the field into empty
+                    tasksNameText.setText("");
+                    descriptionText.setText("");
+                    priorityComboBox.setSelectedIndex(-1);
+                    categoryComboBox.setSelectedIndex(-1);
 
                     updateTable();
                 }
 
+            }
+        });
 
 
 
-
-
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateTable();
             }
         });
 

@@ -125,7 +125,7 @@ public class Tasks {
     public String toString(){
 
         String statement = String.format("ID: %d, Tasks: %s, Description: %s, Priority: %d, Category: %s, Created on: %s. ",
-                this.tasksID, this,name, this.description, this.priority, this.category, this.dateCreated);
+                this.tasksID, this.name, this.description, this.priority, category.name(), this.dateCreated);
 
         if(dateCompleted !=null && dateCompleted.getTime() !=0){
             statement += "Completed on: " + dateCompleted;
