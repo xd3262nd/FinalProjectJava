@@ -51,6 +51,25 @@ public class ListController {
         }
     }
 
+    protected Tasks searchByID(int id) {
+        Tasks t = ListStore.getTasksInfo(id);
+        return t;
+    }
+
+    protected void updateTasks(Tasks selectedTask) {
+        ListStore.updateTasks(selectedTask);
+    }
+
+    protected List<Tasks> searchByPriority(int p) {
+        List<Tasks> tasksResult = ListStore.searchByPriority(p);
+        return tasksResult;
+    }
+
+    protected List<Tasks> searchByCategory(String category) {
+        List<Tasks> tasksResult = ListStore.searchByCategory(category);
+        return tasksResult;
+    }
+
 
     //need to update/refresh the todotable and completedtable
 

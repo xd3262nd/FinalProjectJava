@@ -13,6 +13,8 @@ import java.util.Vector;
 
 
 public class ToDoListManager extends JFrame{
+
+
     private JPanel mainPanel;
 
     private JPanel addTasksPanel;
@@ -46,6 +48,8 @@ public class ToDoListManager extends JFrame{
     private JTable completeTable;
 
     static final String ALL_TASKS = "Showing all incomplete tasks";
+    static final String NO_TASKS_FOUND = "No Matching tasks";
+    static final String MATCHING_TASKS = "Matching Incomplete Tasks";
 
 
 
@@ -81,16 +85,15 @@ public class ToDoListManager extends JFrame{
 
 
 
-        //todo create listmodel for the taskslist
-
         searchListModel = new DefaultListModel<>();
         searchList.setModel(searchListModel);
 
-        //TODO table set up
-        //setup table
-        //update table here
-//        todoModel = new DefaultTableModel();
-//        completedModel = new DefaultTableModel();
+        searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+        List<Tasks> allData = controller.loadAllTasksFromStore();
+        setListData(allData);
+
+        searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
 
         setUpTable(); //TODO need to make sure the user can not click on the table
         //TODO this should be in the refresh button
@@ -204,7 +207,7 @@ public class ToDoListManager extends JFrame{
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                boolean checkValidation=false;
+                boolean checkValidation;
                 String name = tasksNameText.getText();
                 String desc = descriptionText.getText();
 
@@ -231,6 +234,10 @@ public class ToDoListManager extends JFrame{
                     categoryComboBox.setSelectedIndex(-1);
 
                     updateTable();
+                    searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+                    List<Tasks> allData = controller.loadAllTasksFromStore();
+                    setListData(allData);
+
                 }
 
             }
@@ -244,6 +251,118 @@ public class ToDoListManager extends JFrame{
                 updateTable();
             }
         });
+
+        completedTaksButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                searchList.setSelectedIndex(-1);
+                //get the index for the selection
+                int index = searchList.getSelectedIndex();
+
+                //checking for selection
+                boolean checkIndex = false;
+
+                if(index<0){
+                    showMessageDialog("No tasks being selected");
+                }else{
+                    //change the validation
+                    checkIndex = true;
+                }
+
+                //when there is a selection
+                if(checkIndex ==true){
+                    //get the tasks value
+                    Tasks value = searchList.getSelectedValue();
+
+                    Tasks getTasks = controller.searchByID(value.getTasksID());
+
+                    getTasks.setDateCompleted(new Date());
+
+                    getTasks.setStatus(Tasks.TasksStatus.COMPLETED);
+
+                    controller.updateTasks(getTasks);
+
+                    showMessageDialog("Tasks Updated");
+
+                    updateTable();
+
+                    searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+                    List<Tasks> allData = controller.loadAllTasksFromStore();
+                    setListData(allData);
+
+                }
+            }
+
+        });
+
+        searchByPriority.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //                    int priority =priorityComboBox.getItemAt(priorityComboBox.getSelectedIndex());
+
+                if(searchByPriorityComboBox.getSelectedIndex()<0){
+                    showMessageDialog("Please select a priority level");
+                }else{
+                    int p = searchByPriorityComboBox.getItemAt(searchByPriorityComboBox.getSelectedIndex());
+                    List<Tasks> searchTasks = new ArrayList<>();
+                    
+                    searchTasks = controller.searchByPriority(p);
+                    
+                    searchPResults(searchTasks);
+                }
+
+                searchByPriorityComboBox.setSelectedIndex(-1);
+            }
+
+            private void searchPResults(List<Tasks> search) {
+
+                if(search==null||search.isEmpty()){
+                    searchListModel.clear();
+                    searchListDescriptionLabel.setText(ToDoListManager.NO_TASKS_FOUND);
+                }else{
+
+                    searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
+                    setListData(search);
+                }
+            }
+        });
+
+        searchByCategoryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+
+
+                if(searchByCategoryComboBox.getSelectedIndex()<0){
+                    showMessageDialog("Please select a category to  search for");
+                }else{
+                    String categorySelected =searchByCategoryComboBox.getItemAt(searchByCategoryComboBox.getSelectedIndex());
+
+                    List<Tasks> searchTasks = new ArrayList<>();
+
+                    searchTasks = controller.searchByCategory(categorySelected);
+
+                    searchCategoryResults(searchTasks);
+                }
+                searchByCategoryComboBox.setSelectedIndex(-1);
+
+            }
+
+            private void searchCategoryResults(List<Tasks> search) {
+
+                if(search==null||search.isEmpty()){
+                    searchListModel.clear();
+                    searchListDescriptionLabel.setText(ToDoListManager.NO_TASKS_FOUND);
+                }else{
+
+                    searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
+                    setListData(search);
+                }
+
+            }
+        });
+
 
 
 

@@ -209,4 +209,157 @@ C
             newTasks.setTasksID(rowID);
         }
     }
+
+    public static Tasks getTasksInfo(int id) {
+
+        try(Connection c = DriverManager.getConnection(dbURI);
+             PreparedStatement ps = c.prepareStatement("SELECT * FROM todos WHERE rowid = ?")){
+
+            ResultSet rs;
+
+            ps.setInt(1, id);
+
+            rs=ps.executeQuery();
+
+            if(rs.next()==false){
+                return null;
+            }else{
+                //dc, p, dc, s
+                String name = rs.getString("taskName");
+                String desc = rs.getString("description");
+
+                Date dateCreated = new Date(rs.getLong("dateCreated"));
+
+                int priority = rs.getInt("priority");
+
+                String categoryDB = rs.getString("category");
+                Tasks.TasksCategory categoryTasks = Tasks.TasksCategory.valueOf(categoryDB);
+
+                Date dateCompleted = new Date(rs.getLong("dateCompleted"));
+
+                String statusDB = rs.getString("status");
+                Tasks.TasksStatus statusT = Tasks.TasksStatus.valueOf(statusDB);
+
+
+                Tasks t = new Tasks(id, name, desc,dateCreated, priority, categoryTasks, dateCompleted, statusT);
+                return t;
+            }
+
+
+
+        }catch(SQLException s){
+            System.out.println(s.getMessage()+s);
+            return null;
+        }
+    }
+
+
+    public static void updateTasks(Tasks task) {
+
+        try(Connection conn = DriverManager.getConnection(dbURI);
+             PreparedStatement pst = conn.prepareStatement("UPDATE todos SET taskName =?, description =?, dateCreated=?, priority=?, category=?, dateCompleted=?, status=? WHERE rowid =?")){
+
+            int id = task.getTasksID();
+            String name = task.getName();
+            String desc = task.getDescription();
+
+            int priorityDB =task.getPriority();
+
+            String categoryDB = String.valueOf(task.getCategory());
+
+            String statusDB = String.valueOf(task.getStatus());
+
+            Long dateCreatedDB = task.getDateCreated().getTime();
+            Long dateCompletedDB = task.getDateCompleted().getTime();
+
+            pst.setString(1, name);
+            pst.setString(2, desc);
+            pst.setLong(3, dateCreatedDB);
+            pst.setInt(4, priorityDB);
+            pst.setString(5, categoryDB);
+            pst.setLong(6, dateCompletedDB);
+            pst.setString(7, statusDB);
+            pst.setInt(8, id);
+
+            pst.executeUpdate();
+
+        }catch(SQLException se){
+            System.out.println(se.getMessage()+se);
+        }
+    }
+
+    public static List<Tasks> searchByPriority(int p) {
+
+        try(Connection c = DriverManager.getConnection(dbURI);
+            PreparedStatement pst = c.prepareStatement("SELECT rowid,* FROM todos WHERE priority= ? AND status = ? ORDER BY category")){
+
+            pst.setInt(1, p);
+            pst.setString(2, "INCOMPLETE");
+
+            List<Tasks> searchList = new ArrayList<>();
+
+            ResultSet rsP = pst.executeQuery();
+
+            while(rsP.next()){
+                int id = rsP.getInt("rowid");
+                String name = rsP.getString("taskName");
+                String desc = rsP.getString("description");
+                Date dateCreated = new Date(rsP.getLong("dateCreated"));
+                int priority = rsP.getInt("priority");
+                String categoryDB = rsP.getString("category");
+                Tasks.TasksCategory categoryT = Tasks.TasksCategory.valueOf(categoryDB);
+                Date dateCompleted = new Date(rsP.getLong("dateCompleted"));
+                String statusDB = rsP.getString("status");
+                Tasks.TasksStatus statusT = Tasks.TasksStatus.valueOf(statusDB);
+
+                Tasks t = new Tasks(id, name, desc, dateCreated, priority, categoryT, dateCompleted, statusT);
+                searchList.add(t);
+
+            }
+            return searchList;
+
+        }catch(SQLException se){
+            System.out.println(se + se.getMessage());
+            return null;
+        }
+    }
+
+    public static List<Tasks> searchByCategory(String category) {
+        try(Connection c = DriverManager.getConnection(dbURI);
+             PreparedStatement pst = c.prepareStatement("SELECT  rowid, * FROM todos WHERE category =? AND status =? ORDER BY category")){
+            
+            pst.setString(1, category);
+            pst.setString(2, "INCOMPLETE");
+
+            List<Tasks> searchList = new ArrayList<>();
+
+            ResultSet rsCategory = pst.executeQuery();
+
+            while(rsCategory.next()){
+                int id = rsCategory.getInt("rowid");
+                String name = rsCategory.getString("taskName");
+                String desc = rsCategory.getString("description");
+                Date dateCreated = new Date(rsCategory.getLong("dateCreated"));
+                int priority = rsCategory.getInt("priority");
+                String categoryDB = rsCategory.getString("category");
+                Tasks.TasksCategory categoryT = Tasks.TasksCategory.valueOf(categoryDB);
+                Date dateCompleted = new Date(rsCategory.getLong("dateCompleted"));
+                String statusDB = rsCategory.getString("status");
+                Tasks.TasksStatus statusT = Tasks.TasksStatus.valueOf(statusDB);
+
+                Tasks t = new Tasks(id, name, desc, dateCreated, priority, categoryT, dateCompleted, statusT);
+                searchList.add(t);
+
+            }
+            return searchList;
+            
+            
+            
+        }catch(SQLException se){
+            System.out.println(se + se.getMessage());
+            return null;
+        }
+        
+        
+    }
 }
