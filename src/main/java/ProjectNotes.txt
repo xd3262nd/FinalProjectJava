@@ -55,7 +55,13 @@ ticketInfoByID.setStatus(Ticket.TicketStatus.RESOLVED);
 
                     }
 
-
  Get the date? converting the date format
 
  //TODO NEED to add static popup message box for error message etc
+
+ //TODO remember this https://stackoverflow.com/questions/16743427/jtable-right-click-popup-menu
+ //TODO get the mouse clicking for editing and deleting the data
+
+ https://stackoverflow.com/questions/29704028/how-to-get-the-value-of-a-jtable-cell-with-a-right-mouse-click
+ https://stackoverflow.com/questions/36288854/row-selection-in-jtable-with-jpopupmenu-via-right-mouse-click
+ https://stackoverflow.com/questions/34984503/right-click-to-select-row-jtable

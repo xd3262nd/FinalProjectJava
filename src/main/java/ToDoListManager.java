@@ -363,7 +363,34 @@ public class ToDoListManager extends JFrame{
             }
         });
 
+        editButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
+                //int selectedIndex;
+                Tasks t;
+
+                if(searchList.getSelectedValue() == null){
+                    showMessageDialog("Please select one task from the table below to edit");
+                }else{
+                    t = searchList.getSelectedValue();
+                    proceedEdit(t);
+                }
+
+            }
+
+            private void proceedEdit(Tasks t) {
+                String newDescription = showInputDialog("Enter text for your new description");
+                t.setDescription(newDescription);
+                controller.updateTasks(t);
+                updateTable();
+
+                searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+                List<Tasks> allData = controller.loadAllTasksFromStore();
+                setListData(allData);
+
+            }
+        });
 
 
     }

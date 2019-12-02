@@ -270,14 +270,20 @@ C
             String statusDB = String.valueOf(task.getStatus());
 
             Long dateCreatedDB = task.getDateCreated().getTime();
-            Long dateCompletedDB = task.getDateCompleted().getTime();
 
             pst.setString(1, name);
             pst.setString(2, desc);
             pst.setLong(3, dateCreatedDB);
             pst.setInt(4, priorityDB);
             pst.setString(5, categoryDB);
-            pst.setLong(6, dateCompletedDB);
+            if(task.getDateCompleted()==null){
+                pst.setLong(6,0);
+            }else{
+                Long dateCompletedDB = task.getDateCompleted().getTime();
+                pst.setLong(6,dateCompletedDB);
+            }
+
+
             pst.setString(7, statusDB);
             pst.setInt(8, id);
 

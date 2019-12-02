@@ -67,6 +67,8 @@ public class ListController {
 
     protected List<Tasks> searchByCategory(String category) {
         List<Tasks> tasksResult = ListStore.searchByCategory(category);
+
+
         return tasksResult;
     }
 
