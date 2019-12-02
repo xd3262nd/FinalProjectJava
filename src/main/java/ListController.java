@@ -12,24 +12,19 @@ public class ListController {
 
     protected Vector<Vector> IncompleteData() {
 
-        Vector<Vector> incompleteData = ListStore.getAllincompleteData();
-
-        return incompleteData;
+        return ListStore.getAllincompleteData();
 
     }
 
     protected Vector <Vector> CompletedData() {
 
-        Vector completedData = ListStore.getAllcompletedData();
-
-        return completedData;
+        return ListStore.getAllcompletedData();
 
 
     }
 
     protected List<Tasks> loadAllTasksFromStore() {
-        List<Tasks> allTasks = ListStore.getAllData();
-        return allTasks;
+        return ListStore.getAllData();
 
     }
 
@@ -38,8 +33,7 @@ public class ListController {
     }
 
     public Vector getColNames() {
-        Vector colNames = ListStore.getColumnNames();
-        return colNames;
+        return ListStore.getColumnNames();
     }
 
     public boolean addTasks(Tasks newTasks) {
@@ -52,8 +46,7 @@ public class ListController {
     }
 
     protected Tasks searchByID(int id) {
-        Tasks t = ListStore.getTasksInfo(id);
-        return t;
+        return ListStore.getTasksInfo(id);
     }
 
     protected void updateTasks(Tasks selectedTask) {
@@ -61,15 +54,13 @@ public class ListController {
     }
 
     protected List<Tasks> searchByPriority(int p) {
-        List<Tasks> tasksResult = ListStore.searchByPriority(p);
-        return tasksResult;
+        return ListStore.searchByPriority(p);
     }
 
     protected List<Tasks> searchByCategory(String category) {
-        List<Tasks> tasksResult = ListStore.searchByCategory(category);
 
 
-        return tasksResult;
+        return ListStore.searchByCategory(category);
     }
 
 
