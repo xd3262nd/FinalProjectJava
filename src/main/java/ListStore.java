@@ -385,4 +385,17 @@ C
             System.out.println(se);
         }
     }
+
+    public static void deleteTasks(String taskName) {
+
+        try(Connection c= DriverManager.getConnection(dbURI);
+             PreparedStatement pst = c.prepareStatement("DELETE FROM todos WHERE taskName= ?")){
+
+            pst.setString(1, taskName);
+            pst.executeUpdate();
+
+        }catch(SQLException se){
+            System.out.println(se);
+        }
+    }
 }

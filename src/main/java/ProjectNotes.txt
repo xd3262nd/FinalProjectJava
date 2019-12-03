@@ -71,3 +71,5 @@ ticketInfoByID.setStatus(Ticket.TicketStatus.RESOLVED);
  remove codes that I do not use
 
  //TODO make sure the input for the tasks name is not started with empty spaces and not have a lot of empty spaces
+
+ //TODO Can try to make the Jtable more concise and make sure right click can view more details etc.

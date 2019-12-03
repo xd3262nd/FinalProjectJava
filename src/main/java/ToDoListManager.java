@@ -179,7 +179,7 @@ public class ToDoListManager extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean checkValidation;
-                String name = tasksNameText.getText();
+                String rawName = tasksNameText.getText();
                 String desc = descriptionText.getText();
 //                    showMessageDialog("Missing Name", "Enter name", JOptionPane.ERROR_MESSAGE);
                 // boolean checkIndex = false;
@@ -200,13 +200,14 @@ public class ToDoListManager extends JFrame{
 
                 if(desc==null || desc.isBlank() ||desc.isEmpty()){
                     showMessageDialog("Missing description");
-                }else if(name ==null|| name.isBlank()||name.isEmpty()){
+                }else if(rawName ==null|| rawName.isBlank()||rawName.isEmpty()){
                     showMessageDialog("Missing tasks name");
                 }else if(priorityComboBox.getSelectedIndex()<0){
                     showMessageDialog("Please select a priority level");
                 }else if(categoryComboBox.getSelectedIndex()<0){
                     showMessageDialog("Please assign a Category for your tasks");
-                }else if(checkValidation =true){
+                }else{
+                    String name = rawName.trim();
                     Date dateCreated = new Date();
                     int priority =priorityComboBox.getItemAt(priorityComboBox.getSelectedIndex());
                     String categoryTasks = categoryComboBox.getItemAt(categoryComboBox.getSelectedIndex());
@@ -243,7 +244,7 @@ public class ToDoListManager extends JFrame{
 
         todoTable.setComponentPopupMenu(tableClickMenu);
 
-        //should i use the mouse adapter?
+        //To add the mouse action listener to makesure can choose the selection when mouse is being clicked
         todoTable.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -271,7 +272,7 @@ public class ToDoListManager extends JFrame{
             }
         });
 
-        //when edit is being clicked
+        //when completed menu item is being selected
         completedMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -299,10 +300,6 @@ public class ToDoListManager extends JFrame{
 
                 showMessageDialog("Successfully Updated");
 
-
-
-
-
             }
         });
         //if delete is being clicked
@@ -313,6 +310,25 @@ public class ToDoListManager extends JFrame{
             }
 
             private void deleteSelected() {
+                int index = todoTable.getSelectedRow();
+                System.out.println(index);
+
+                //get the data from the selected row
+                Vector data = todoModel.getDataVector().elementAt(index);
+                System.out.println(data);//[asdf, fffff, 3, WORK] tasks, desc, priority, category
+
+                String taskName = String.valueOf(data.get(0));
+                System.out.println(taskName);
+
+                //TODO call controller to delete from DB
+                controller.deleteTasks(taskName);
+                updateTable();
+                List<Tasks> allData = controller.loadAllTasksFromStore();
+                setListData(allData);
+
+                showMessageDialog("Successfully Deleted");
+
+                //TODO update table and the JList down there
 
 
             }

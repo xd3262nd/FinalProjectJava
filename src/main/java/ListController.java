@@ -69,6 +69,10 @@ public class ListController {
         ListStore.updateByTaskName(taskName);
     }
 
+    public void deleteTasks(String taskName) {
+        ListStore.deleteTasks(taskName);
+    }
+
 
     //need to update/refresh the todotable and completedtable
 
