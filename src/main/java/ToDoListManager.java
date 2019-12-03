@@ -30,7 +30,7 @@ public class ToDoListManager extends JFrame{
     private JLabel categoryLabel;
 
     private JPanel toDoListPanel;
-    private JButton completedTaksButton;
+    private JButton completedTasksButton;
     private JButton showAllTasks;
     private JLabel toDoLabel;
     private JLabel completedList;
@@ -44,7 +44,6 @@ public class ToDoListManager extends JFrame{
     private JButton quitButton;
     private JPanel controlPanel;
     private JButton editButton;
-    private JButton refreshButton;
     private JTable todoTable;
     private JTable completeTable;
 
@@ -180,7 +179,7 @@ public class ToDoListManager extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 boolean checkValidation;
                 String rawName = tasksNameText.getText();
-                String desc = descriptionText.getText();
+                String rawDesc = descriptionText.getText();
 //                    showMessageDialog("Missing Name", "Enter name", JOptionPane.ERROR_MESSAGE);
                 // boolean checkIndex = false;
                 //                String pText = newPlaceNameTextField.getText();
@@ -198,7 +197,7 @@ public class ToDoListManager extends JFrame{
                 //                        newPlaceNameTextField.setText("");
 
 
-                if(desc==null || desc.isBlank() ||desc.isEmpty()){
+                if(rawDesc==null || rawDesc.isBlank() ||rawDesc.isEmpty()){
                     showMessageDialog("Missing description");
                 }else if(rawName ==null|| rawName.isBlank()||rawName.isEmpty()){
                     showMessageDialog("Missing tasks name");
@@ -208,6 +207,7 @@ public class ToDoListManager extends JFrame{
                     showMessageDialog("Please assign a Category for your tasks");
                 }else{
                     String name = rawName.trim();
+                    String desc = rawDesc.trim();
                     Date dateCreated = new Date();
                     int priority =priorityComboBox.getItemAt(priorityComboBox.getSelectedIndex());
                     String categoryTasks = categoryComboBox.getItemAt(categoryComboBox.getSelectedIndex());
@@ -233,16 +233,28 @@ public class ToDoListManager extends JFrame{
 
 //create the popup menu
         JPopupMenu tableClickMenu = new JPopupMenu();
+        JPopupMenu completedClickMenu = new JPopupMenu();
 //item in the menu
-        JMenuItem completedMenuItem = new JMenuItem("Completed"); //maybe deleting this one to make it as completed instead
+        JMenuItem completedMenuItem = new JMenuItem("Completed");
         JMenuItem deleteMenuItem = new JMenuItem("Delete");
-        //TODO maybe will add completed this task in the table to remove the JButton
+        JMenuItem getMoreDetails = new JMenuItem("Show Description");
+
+        JMenuItem deleteCompletedItem = new JMenuItem("Delete");
 
 
+
+//add elements into the clickMenu
         tableClickMenu.add(completedMenuItem);
         tableClickMenu.add(deleteMenuItem);
+        tableClickMenu.add(new JSeparator());
+        tableClickMenu.add(getMoreDetails);
+
+        completedClickMenu.add(deleteCompletedItem);
 
         todoTable.setComponentPopupMenu(tableClickMenu);
+        completeTable.setComponentPopupMenu(completedClickMenu);
+
+
 
         //To add the mouse action listener to makesure can choose the selection when mouse is being clicked
         todoTable.addMouseListener(new MouseListener() {
@@ -272,6 +284,60 @@ public class ToDoListManager extends JFrame{
             }
         });
 
+        completeTable.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+
+        deleteCompletedItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteSelected();
+            }
+
+            private void deleteSelected() {
+
+                if(completeTable.getSelectedRow()==-1){
+                    showMessageDialog("Please click on one task on the table.");
+
+                }else{
+                    Vector data = completedModel.getDataVector().elementAt(completeTable.getSelectedRow());
+                    int selectedID = (int) data.get(0);
+
+                    controller.deleteTasks(selectedID);
+                    updateTable();
+                    List<Tasks> allData = controller.loadAllTasksFromStore();
+                    setListData(allData);
+
+                    showMessageDialog("Deleted Selected Task");
+                }
+
+
+            }
+        });
+
         //when completed menu item is being selected
         completedMenuItem.addActionListener(new ActionListener() {
             @Override
@@ -281,24 +347,29 @@ public class ToDoListManager extends JFrame{
 
             private void completedSelected() {
 
-                int index = todoTable.getSelectedRow();
-                System.out.println(index);
-
                 //get the data from the selected row
-                Vector data = todoModel.getDataVector().elementAt(index);
-                System.out.println(data);//[asdf, fffff, 3, WORK] tasks, desc, priority, category
+                Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
 
-                String taskName = String.valueOf(data.get(0));
-                System.out.println(taskName);
+                int selectedID = (int) data.get(0);
 
-                //TODO call controller to update the status of it into completed for status.
-                //DO I HAVE TO CHANGE THE TASKS object value too? update into completed?
-                controller.updateByTaskName(taskName);
+                Tasks getTasks = controller.searchByID(selectedID);
+
+                getTasks.setDateCompleted(new Date());
+
+                getTasks.setStatus(Tasks.TasksStatus.COMPLETED);
+
+                controller.updateTasks(getTasks);
+
+
+
                 updateTable();
+
+                searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
                 List<Tasks> allData = controller.loadAllTasksFromStore();
                 setListData(allData);
 
-                showMessageDialog("Successfully Updated");
+
+                showMessageDialog("Updated Selected Task");
 
             }
         });
@@ -310,39 +381,48 @@ public class ToDoListManager extends JFrame{
             }
 
             private void deleteSelected() {
-                int index = todoTable.getSelectedRow();
-                System.out.println(index);
 
                 //get the data from the selected row
-                Vector data = todoModel.getDataVector().elementAt(index);
-                System.out.println(data);//[asdf, fffff, 3, WORK] tasks, desc, priority, category
+                Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
 
-                String taskName = String.valueOf(data.get(0));
-                System.out.println(taskName);
+                int selectedID = (int) data.get(0);
 
-                //TODO call controller to delete from DB
-                controller.deleteTasks(taskName);
+                controller.deleteTasks(selectedID);
                 updateTable();
                 List<Tasks> allData = controller.loadAllTasksFromStore();
                 setListData(allData);
 
-                showMessageDialog("Successfully Deleted");
-
-                //TODO update table and the JList down there
-
-
+                showMessageDialog("Deleted Selected Task");
             }
         });
 
-
-        refreshButton.addActionListener(new ActionListener() {
+        getMoreDetails.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                updateTable();
+                moreDetailsSelected();
+            }
+
+            private void moreDetailsSelected() {
+
+                //get the date from the selected row
+                Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
+
+                int selectedID = (int) data.get(0);
+
+                Tasks t = controller.getDetailsByID(selectedID);
+                String statement = t.getDescription();
+
+                detailsDialog(statement, "Description for " + t.getName(), JOptionPane.INFORMATION_MESSAGE);
+
+
+
+
             }
         });
 
-        completedTaksButton.addActionListener(new ActionListener() {
+
+
+        completedTasksButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
@@ -511,19 +591,18 @@ public class ToDoListManager extends JFrame{
             priorityLModel.addElement(value);
         }
 
-        for(int l=0; l<categoryList.length;l++){
-            categoryLModel.addElement(categoryList[l]);
+        for (String s : categoryList) {
+            categoryLModel.addElement(s);
         }
 
 
+        for (int value : index) {
 
-        for(int i=0; i<index.length; i++){
-
-            priorityListModel.addElement(index[i]);
+            priorityListModel.addElement(value);
         }
 
-        for(int j=0; j<categoryList.length;j++){
-            categoryListModel.addElement(categoryList[j]);
+        for (String s : categoryList) {
+            categoryListModel.addElement(s);
         }
 
 
@@ -541,6 +620,13 @@ public class ToDoListManager extends JFrame{
         searchByCategoryComboBox.setModel(categoryLModel);
         searchByCategoryComboBox.setSelectedIndex(-1);
 
+        quitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                quitProgram();
+            }
+        });
+
 
     }
 
@@ -550,11 +636,19 @@ public class ToDoListManager extends JFrame{
     }
 
     protected void showMessageDialog(String message){
+
         JOptionPane.showMessageDialog(this, message);
     }
 
     protected String showInputDialog(String question){
         return JOptionPane.showInputDialog(this, question);
+    }
+
+
+    protected void detailsDialog(String message, String title, int type) {
+        JOptionPane.showMessageDialog(this, message, title, type);
+
+
     }
 
 }

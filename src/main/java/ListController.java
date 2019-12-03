@@ -65,29 +65,14 @@ public class ListController {
         return ListStore.searchByCategory(category);
     }
 
-    public void updateByTaskName(String taskName) {
-        ListStore.updateByTaskName(taskName);
+
+    public void deleteTasks(int selectedID) {
+        ListStore.deleteTasks(selectedID);
     }
 
-    public void deleteTasks(String taskName) {
-        ListStore.deleteTasks(taskName);
+    public Tasks getDetailsByID(int selectedID) {
+        return ListStore.getDetailsBYID(selectedID);
     }
-
-
-    //need to update/refresh the todotable and completedtable
-
-    //add new tasks into database
-
-    //completed tasks button control
-
-    //search by priority button
-
-    //search by category button
-
-    //edit description button
-
-
-
 
 
 //closing

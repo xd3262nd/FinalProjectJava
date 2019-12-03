@@ -28,8 +28,7 @@ public class ListStore {
 
     public static Vector<Vector> getAllincompleteData() {
 
-//TODO need to work on this to get the incomplete Data
-        String sqlQuery = "SELECT * FROM todos WHERE status='INCOMPLETE'";
+        String sqlQuery = "SELECT rowid,* FROM todos WHERE status='INCOMPLETE'";
         try(Connection conn = DriverManager.getConnection(dbURI);
              Statement stat = conn.createStatement()){
 
@@ -37,28 +36,25 @@ public class ListStore {
             Vector<Vector> vectors = new Vector<>();
 
             /*
-            Tasks
-Desc
-P
-C
+Id, taskName, priority, category
              */
 
             while(rsIncomData.next()){
+                int id = rsIncomData.getInt("rowid");
                 String name = rsIncomData.getString("taskName");
-                String desc = rsIncomData.getString("description");
+                //String desc = rsIncomData.getString("description");
                 int prio = rsIncomData.getInt("priority");
                 String category = rsIncomData.getString("category");
 
                 Vector v = new Vector();
+                v.add(id);
                 v.add(name);
-                v.add(desc);
+                //v.add(desc);
                 v.add(prio);
                 v.add(category);
 
                 vectors.add(v);
             }
-
-
             return vectors;
 
 
@@ -68,29 +64,30 @@ C
             return null;
         }
 
-
     }
 
     public static Vector<Vector> getAllcompletedData() {
-        String sqlQuery = "SELECT * FROM todos WHERE status='COMPLETED'";
-
-        //TODO need to work on this to get all completed data
+        String sqlQuery = "SELECT rowid,* FROM todos WHERE status='COMPLETED'";
 
         try(Connection conn = DriverManager.getConnection(dbURI);
             Statement stat = conn.createStatement()){
             ResultSet rsIncomData = stat.executeQuery(sqlQuery);
 
             Vector<Vector> vectors = new Vector<>();
+            /*
+Id, taskName, priority, category
+             */
 
             while(rsIncomData.next()){
                 String name = rsIncomData.getString("taskName");
-                String desc = rsIncomData.getString("description");
+                int id = rsIncomData.getInt("rowid");
                 int prio = rsIncomData.getInt("priority");
                 String category = rsIncomData.getString("category");
 
                 Vector v = new Vector();
+                v.add(id);
                 v.add(name);
-                v.add(desc);
+                //v.add(desc);
                 v.add(prio);
                 v.add(category);
 
@@ -165,8 +162,8 @@ C
     static Vector getColumnNames() {
         Vector<String> columnNames = new Vector<>();
 
+        columnNames.add("TaskID");
         columnNames.add("Tasks");
-        columnNames.add("Description");
         columnNames.add("Priority");
         columnNames.add("Category");
         return columnNames;
@@ -221,7 +218,7 @@ C
 
             rs=ps.executeQuery();
 
-            if(rs.next()==false){
+            if(!rs.next()){
                 return null;
             }else{
                 //dc, p, dc, s
@@ -369,33 +366,53 @@ C
         
     }
 
-    public static void updateByTaskName(String taskName) {
 
-        try(Connection c = DriverManager.getConnection(dbURI);
-             PreparedStatement pst = c.prepareStatement("UPDATE todos SET status = ? WHERE taskName = ?")){
-
-            pst.setString(1, "COMPLETED");
-            pst.setString(2, taskName);
-
-            pst.executeUpdate();
-
-
-
-        }catch (SQLException se){
-            System.out.println(se);
-        }
-    }
-
-    public static void deleteTasks(String taskName) {
-
+    public static void deleteTasks(int ID) {
         try(Connection c= DriverManager.getConnection(dbURI);
-             PreparedStatement pst = c.prepareStatement("DELETE FROM todos WHERE taskName= ?")){
+            PreparedStatement pst = c.prepareStatement("DELETE FROM todos WHERE rowid= ?")){
 
-            pst.setString(1, taskName);
+            pst.setInt(1, ID);
             pst.executeUpdate();
 
         }catch(SQLException se){
             System.out.println(se);
         }
+
+    }
+
+    public static Tasks getDetailsBYID(int ID) {
+        try(Connection c= DriverManager.getConnection(dbURI);
+            PreparedStatement pst = c.prepareStatement("SELECT rowid,* FROM todos WHERE rowid = ?")){
+
+            pst.setInt(1,ID );
+
+            ResultSet rs = pst.executeQuery();
+
+            Tasks t = null;
+            while(rs.next()){
+                int id = rs.getInt("rowid");
+                String name = rs.getString("taskName");
+                String desc = rs.getString("description");
+                Date dateCreated = new Date(rs.getLong("dateCreated"));
+                int priority = rs.getInt("priority");
+                String categoryDB = rs.getString("category");
+                Tasks.TasksCategory categoryT = Tasks.TasksCategory.valueOf(categoryDB);
+                Date dateCompleted = new Date(rs.getLong("dateCompleted"));
+                String statusDB = rs.getString("status");
+                Tasks.TasksStatus statusT = Tasks.TasksStatus.valueOf(statusDB);
+
+                t = new Tasks(id, name, desc, dateCreated, priority, categoryT, dateCompleted, statusT);
+
+
+            }
+            return t;
+
+
+        }catch(SQLException se){
+            System.out.println(se);
+            return null;
+        }
+
+
     }
 }
