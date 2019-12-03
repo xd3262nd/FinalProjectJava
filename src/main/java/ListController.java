@@ -33,6 +33,7 @@ public class ListController {
     }
 
     public Vector getColNames() {
+
         return ListStore.getColumnNames();
     }
 
@@ -50,6 +51,7 @@ public class ListController {
     }
 
     protected void updateTasks(Tasks selectedTask) {
+
         ListStore.updateTasks(selectedTask);
     }
 
@@ -61,6 +63,10 @@ public class ListController {
 
 
         return ListStore.searchByCategory(category);
+    }
+
+    public void updateByTaskName(String taskName) {
+        ListStore.updateByTaskName(taskName);
     }
 
 

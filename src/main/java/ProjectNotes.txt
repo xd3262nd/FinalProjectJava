@@ -65,3 +65,9 @@ ticketInfoByID.setStatus(Ticket.TicketStatus.RESOLVED);
  https://stackoverflow.com/questions/29704028/how-to-get-the-value-of-a-jtable-cell-with-a-right-mouse-click
  https://stackoverflow.com/questions/36288854/row-selection-in-jtable-with-jpopupmenu-via-right-mouse-click
  https://stackoverflow.com/questions/34984503/right-click-to-select-row-jtable
+
+ clean up my code
+ get rid of empty spaces, add comments
+ remove codes that I do not use
+
+ //TODO make sure the input for the tasks name is not started with empty spaces and not have a lot of empty spaces

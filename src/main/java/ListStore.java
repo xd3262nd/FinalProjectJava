@@ -368,4 +368,21 @@ C
         
         
     }
+
+    public static void updateByTaskName(String taskName) {
+
+        try(Connection c = DriverManager.getConnection(dbURI);
+             PreparedStatement pst = c.prepareStatement("UPDATE todos SET status = ? WHERE taskName = ?")){
+
+            pst.setString(1, "COMPLETED");
+            pst.setString(2, taskName);
+
+            pst.executeUpdate();
+
+
+
+        }catch (SQLException se){
+            System.out.println(se);
+        }
+    }
 }

@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class ToDoListManager extends JFrame{
 
     protected DefaultTableModel todoModel;
     protected DefaultTableModel completedModel;
-    //need to setmodel for the default table model
+
 
 
     // TODO Use these instead of your own Strings. The tests expect you to use these constants
@@ -76,8 +77,10 @@ public class ToDoListManager extends JFrame{
 
         setTitle("To-Do Tasks Manager");
         setContentPane(mainPanel);
+        setPreferredSize(new Dimension(800,800));
         pack();
         setVisible(true);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         configComboBox();
@@ -95,35 +98,13 @@ public class ToDoListManager extends JFrame{
         searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 
-        setUpTable(); //TODO need to make sure the user can not click on the table
-        //TODO this should be in the refresh button
-        //updateTable();
-
-
-
-        //TODO need to call controller for load all tasks when the program start here //do not need to do this
-        //Will need to return Tasks List from the controller load all tasks
-        //and call method setListData
-        //  List<Ticket> listData = controller.loadOpenTicketsFromTicketStore();
-        //  setListData(listData);
-        //ticketList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-
-
-
-
-
+        setUpTable();
 
     }
 
 
     private void setUpTable() {
 
-//        Vector <String> colNames = new Vector<>();
-//        colNames.add("Tasks");
-//        colNames.add("Description");
-//        colNames.add("Priority");
-//        colNames.add("Category");
 
         Vector colNames = controller.getColNames();
 
@@ -144,7 +125,6 @@ public class ToDoListManager extends JFrame{
             }
         };
 
-        //TODO not sure if needed this one
         todoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         todoTable.setModel(todoModel);
         todoTable.setAutoCreateRowSorter(true);
@@ -158,11 +138,7 @@ public class ToDoListManager extends JFrame{
 
         //TODO refresh button will call on this method
         Vector colNames = controller.getColNames();
-//        Vector <String> colNames = new Vector<>();
-//        colNames.add("Tasks");
-//        colNames.add("Description");
-//        colNames.add("Priority");
-//        colNames.add("Category");
+
 
         Vector <Vector> incompletedData = controller.IncompleteData();
 
@@ -172,7 +148,6 @@ public class ToDoListManager extends JFrame{
         completedModel.setDataVector(completedData, colNames);
 
     }
-
 
     private void addListener() {
 
@@ -190,13 +165,9 @@ public class ToDoListManager extends JFrame{
         showAllTasks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
                 List<Tasks> allData = controller.loadAllTasksFromStore();
                 setListData(allData);
-
-
-
             }
         });
 
@@ -210,6 +181,22 @@ public class ToDoListManager extends JFrame{
                 boolean checkValidation;
                 String name = tasksNameText.getText();
                 String desc = descriptionText.getText();
+//                    showMessageDialog("Missing Name", "Enter name", JOptionPane.ERROR_MESSAGE);
+                // boolean checkIndex = false;
+                //                String pText = newPlaceNameTextField.getText();
+                //
+                //                //when the JText is not empty
+                //                if(!pText.isBlank()){
+                //                    //make sure it gets trim off the blank space
+                //                    //trim out the blank space after text
+                //                    String placeText = pText.trim();
+                //
+                //                    //check to see if the Model List is empty
+                //                    //so we can add the text into the ModelList
+                //                    if(!(placeText ==null) && wishListModel.isEmpty() ){
+                //                        wishListModel.addElement(placeText);
+                //                        newPlaceNameTextField.setText("");
+
 
                 if(desc==null || desc.isBlank() ||desc.isEmpty()){
                     showMessageDialog("Missing description");
@@ -243,6 +230,93 @@ public class ToDoListManager extends JFrame{
             }
         });
 
+//create the popup menu
+        JPopupMenu tableClickMenu = new JPopupMenu();
+//item in the menu
+        JMenuItem completedMenuItem = new JMenuItem("Completed"); //maybe deleting this one to make it as completed instead
+        JMenuItem deleteMenuItem = new JMenuItem("Delete");
+        //TODO maybe will add completed this task in the table to remove the JButton
+
+
+        tableClickMenu.add(completedMenuItem);
+        tableClickMenu.add(deleteMenuItem);
+
+        todoTable.setComponentPopupMenu(tableClickMenu);
+
+        //should i use the mouse adapter?
+        todoTable.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+
+        //when edit is being clicked
+        completedMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                completedSelected();
+            }
+
+            private void completedSelected() {
+
+                int index = todoTable.getSelectedRow();
+                System.out.println(index);
+
+                //get the data from the selected row
+                Vector data = todoModel.getDataVector().elementAt(index);
+                System.out.println(data);//[asdf, fffff, 3, WORK] tasks, desc, priority, category
+
+                String taskName = String.valueOf(data.get(0));
+                System.out.println(taskName);
+
+                //TODO call controller to update the status of it into completed for status.
+                //DO I HAVE TO CHANGE THE TASKS object value too? update into completed?
+                controller.updateByTaskName(taskName);
+                updateTable();
+                List<Tasks> allData = controller.loadAllTasksFromStore();
+                setListData(allData);
+
+                showMessageDialog("Successfully Updated");
+
+
+
+
+
+            }
+        });
+        //if delete is being clicked
+        deleteMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteSelected();
+            }
+
+            private void deleteSelected() {
+
+
+            }
+        });
 
 
         refreshButton.addActionListener(new ActionListener() {
@@ -416,9 +490,9 @@ public class ToDoListManager extends JFrame{
         priorityLModel = new DefaultComboBoxModel<>();
         categoryLModel = new DefaultComboBoxModel<>();
 
-        for(int k=0; k<index.length; k++){
+        for (int value : index) {
 
-            priorityLModel.addElement(index[k]);
+            priorityLModel.addElement(value);
         }
 
         for(int l=0; l<categoryList.length;l++){
