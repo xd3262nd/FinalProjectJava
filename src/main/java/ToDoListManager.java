@@ -180,22 +180,6 @@ public class ToDoListManager extends JFrame{
                 boolean checkValidation;
                 String rawName = tasksNameText.getText();
                 String rawDesc = descriptionText.getText();
-//                    showMessageDialog("Missing Name", "Enter name", JOptionPane.ERROR_MESSAGE);
-                // boolean checkIndex = false;
-                //                String pText = newPlaceNameTextField.getText();
-                //
-                //                //when the JText is not empty
-                //                if(!pText.isBlank()){
-                //                    //make sure it gets trim off the blank space
-                //                    //trim out the blank space after text
-                //                    String placeText = pText.trim();
-                //
-                //                    //check to see if the Model List is empty
-                //                    //so we can add the text into the ModelList
-                //                    if(!(placeText ==null) && wishListModel.isEmpty() ){
-                //                        wishListModel.addElement(placeText);
-                //                        newPlaceNameTextField.setText("");
-
 
                 if(rawDesc==null || rawDesc.isBlank() ||rawDesc.isEmpty()){
                     showMessageDialog("Missing description");
