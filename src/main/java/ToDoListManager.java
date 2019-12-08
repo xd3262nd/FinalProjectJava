@@ -181,69 +181,59 @@ public class ToDoListManager extends JFrame{
 
     private void addListener() {
 
-        priorityComboBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
+        //What can use Lambda on this?
+        priorityComboBox.addItemListener(e -> {
 
-            }
         });
 
 
-        //TODO this will be calling the controller to load all tasks and order by status first then the priority.
+        //this will be calling the controller to load all tasks and order by status first then the priority.
         //Then it will print out in the JLIST on searchPanel and change the description on the search Panel
         //button listener
-        showAllTasks.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        showAllTasks.addActionListener(e -> {
+            searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+            List<Task> allData = controller.getAllTasks();
+            setListData(allData);
+        });
+
+        //Need to have a confirmation messgae that it is added
+        //run thru the controller to load the JTABLE??
+        addButton.addActionListener(e -> {
+
+            String rawName = tasksNameText.getText();
+            String rawDesc = descriptionText.getText();
+
+            if(rawDesc==null || rawDesc.isBlank() ||rawDesc.isEmpty()){
+                showMessageDialog("Missing description");
+            }else if(rawName ==null|| rawName.isBlank()||rawName.isEmpty()){
+                showMessageDialog("Missing tasks name");
+            }else if(priorityComboBox.getSelectedIndex()<0){
+                showMessageDialog("Please select a priority level");
+            }else if(categoryComboBox.getSelectedIndex()<0){
+                showMessageDialog("Please assign a Category for your tasks");
+            }else{
+                String name = rawName.trim();
+                String desc = rawDesc.trim();
+                Date dateCreated = new Date();
+                int priority =priorityComboBox.getItemAt(priorityComboBox.getSelectedIndex());
+                String categoryTask = categoryComboBox.getItemAt(categoryComboBox.getSelectedIndex());
+                Task.TaskCategory cat = Task.TaskCategory.valueOf(categoryTask);
+                Task newTask = new Task(name,desc,dateCreated, priority,cat );
+
+                controller.addTask(newTask);
+
+                tasksNameText.setText("");
+                descriptionText.setText("");
+                priorityComboBox.setSelectedIndex(-1);
+                categoryComboBox.setSelectedIndex(-1);
+
+                updateTable();
                 searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
                 List<Task> allData = controller.getAllTasks();
                 setListData(allData);
-            }
-        });
-
-
-        //ToDO this will do on adding the tasks with the new tasks constructor and need to add into DB
-        //Need to have a confirmation messgae that it is added
-        //run thru the controller to load the JTABLE??
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                String rawName = tasksNameText.getText();
-                String rawDesc = descriptionText.getText();
-
-                if(rawDesc==null || rawDesc.isBlank() ||rawDesc.isEmpty()){
-                    showMessageDialog("Missing description");
-                }else if(rawName ==null|| rawName.isBlank()||rawName.isEmpty()){
-                    showMessageDialog("Missing tasks name");
-                }else if(priorityComboBox.getSelectedIndex()<0){
-                    showMessageDialog("Please select a priority level");
-                }else if(categoryComboBox.getSelectedIndex()<0){
-                    showMessageDialog("Please assign a Category for your tasks");
-                }else{
-                    String name = rawName.trim();
-                    String desc = rawDesc.trim();
-                    Date dateCreated = new Date();
-                    int priority =priorityComboBox.getItemAt(priorityComboBox.getSelectedIndex());
-                    String categoryTask = categoryComboBox.getItemAt(categoryComboBox.getSelectedIndex());
-                    Task.TaskCategory cat = Task.TaskCategory.valueOf(categoryTask);
-                    Task newTask = new Task(name,desc,dateCreated, priority,cat );
-
-                    controller.addTask(newTask);
-
-                    tasksNameText.setText("");
-                    descriptionText.setText("");
-                    priorityComboBox.setSelectedIndex(-1);
-                    categoryComboBox.setSelectedIndex(-1);
-
-                    updateTable();
-                    searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-                    List<Task> allData = controller.getAllTasks();
-                    setListData(allData);
-
-                }
 
             }
+
         });
 
 
@@ -315,99 +305,84 @@ public class ToDoListManager extends JFrame{
 
 
 
-        completedTaskButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        completedTaskButton.addActionListener(e -> {
 
-                searchList.setSelectedIndex(-1);
-                //get the index for the selection
-                int index = searchList.getSelectedIndex();
+            searchList.setSelectedIndex(-1);
+            //get the index for the selection
+            int index = searchList.getSelectedIndex();
 
-                //checking for selection
-                boolean checkIndex = false;
+            //checking for selection
+            boolean checkIndex = false;
 
-                if(index<0){
-                    showMessageDialog("No tasks being selected");
-                }else{
-                    //change the validation
-                    checkIndex = true;
-                }
-
-                //when there is a selection
-                if(checkIndex ==true){
-                    //get the tasks value
-                    Task value = searchList.getSelectedValue();
-
-                    Task getTask = controller.searchByID(value.getTaskID());
-
-                    getTask.setDateCompleted(new Date());
-
-                    getTask.setStatus(Task.TaskStatus.COMPLETED);
-
-                    controller.updateTask(getTask);
-
-                    showMessageDialog("Task Updated");
-
-                    updateTable();
-                    searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-                    List<Task> allData = controller.getAllTasks();
-                    setListData(allData);
-
-                }
+            if(index<0){
+                showMessageDialog("No tasks being selected");
+            }else{
+                //change the validation
+                checkIndex = true;
             }
 
-        });
+            //when there is a selection
+            if(checkIndex){
+                //get the tasks value
+                Task value = searchList.getSelectedValue();
 
-        searchByPriority.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+                Task getTask = controller.searchByID(value.getTaskID());
 
-                if(searchByPriorityComboBox.getSelectedIndex()<0){
-                    showMessageDialog("Please select a priority level");
-                }else{
-                    int p = searchByPriorityComboBox.getItemAt(searchByPriorityComboBox.getSelectedIndex());
-                    List<Task> searchTask;
-                    searchTask = controller.searchByPriority(p);
-                    PrioritySearch(searchTask);
-                }
-                searchByPriorityComboBox.setSelectedIndex(-1);
+                getTask.setDateCompleted(new Date());
+
+                getTask.setStatus(Task.TaskStatus.COMPLETED);
+
+                controller.updateTask(getTask);
+
+                showMessageDialog("Task Updated");
+
+                updateTable();
+                searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+                List<Task> allData = controller.getAllTasks();
+                setListData(allData);
+
             }
         });
 
-        searchByCategoryButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(searchByCategoryComboBox.getSelectedIndex()<0){
-                    showMessageDialog("Please select a category to  search for");
-                }else{
-                    String categorySelected =searchByCategoryComboBox.getItemAt(searchByCategoryComboBox.getSelectedIndex());
+        searchByPriority.addActionListener(e -> {
 
-                    List<Task> searchTask = new ArrayList<>();
-
-                    searchTask = controller.searchByCategory(categorySelected);
-
-                    searchCategoryResults(searchTask);
-                }
-                searchByCategoryComboBox.setSelectedIndex(-1);
+            if(searchByPriorityComboBox.getSelectedIndex()<0){
+                showMessageDialog("Please select a priority level");
+            }else{
+                int p = searchByPriorityComboBox.getItemAt(searchByPriorityComboBox.getSelectedIndex());
+                List<Task> searchTask;
+                searchTask = controller.searchByPriority(p);
+                PrioritySearch(searchTask);
             }
+            searchByPriorityComboBox.setSelectedIndex(-1);
         });
 
-        editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        searchByCategoryButton.addActionListener(e -> {
+            if(searchByCategoryComboBox.getSelectedIndex()<0){
+                showMessageDialog("Please select a category to  search for");
+            }else{
+                String categorySelected =searchByCategoryComboBox.getItemAt(searchByCategoryComboBox.getSelectedIndex());
 
-                //initialize the Task object
-                Task t;
+                List<Task> searchTask = new ArrayList<>();
 
-                if(searchList.getSelectedValue() == null){
-                    showMessageDialog("Please select one task from the table below to edit");
-                }else{
-                    t = searchList.getSelectedValue();
-                    editTask(t);
-                }
+                searchTask = controller.searchByCategory(categorySelected);
 
+                searchCategoryResults(searchTask);
             }
+            searchByCategoryComboBox.setSelectedIndex(-1);
+        });
 
+        editButton.addActionListener(e -> {
+
+            //initialize the Task object
+            Task t;
+
+            if(searchList.getSelectedValue() == null){
+                showMessageDialog("Please select one task from the table below to edit");
+            }else{
+                t = searchList.getSelectedValue();
+                editTask(t);
+            }
 
         });
 
@@ -592,12 +567,7 @@ public class ToDoListManager extends JFrame{
         searchByCategoryComboBox.setModel(categoryLModel);
         searchByCategoryComboBox.setSelectedIndex(-1);
 
-        quitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                quitProgram();
-            }
-        });
+        quitButton.addActionListener(e -> quitProgram());
 
 
     }
