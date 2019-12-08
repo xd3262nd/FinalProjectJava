@@ -12,18 +12,18 @@ public class ListController {
 
     protected Vector<Vector> IncompleteData() {
 
-        return ListStore.getAllincompleteData();
+        return ListStore.AllIncompleteData();
 
     }
 
     protected Vector <Vector> CompletedData() {
 
-        return ListStore.getAllcompletedData();
+        return ListStore.AllCompletedData();
 
 
     }
 
-    protected List<Tasks> loadAllTasksFromStore() {
+    protected List<Task> getAllTasks() {
         return ListStore.getAllData();
 
     }
@@ -37,41 +37,41 @@ public class ListController {
         return ListStore.getColumnNames();
     }
 
-    public boolean addTasks(Tasks newTasks) {
+    public boolean addTask(Task newTask) {
         try{
-            ListStore.add(newTasks);
+            ListStore.add(newTask);
             return true;
         }catch(SQLException s){
             return false;
         }
     }
 
-    protected Tasks searchByID(int id) {
-        return ListStore.getTasksInfo(id);
+    protected Task searchByID(int id) {
+        return ListStore.getTaskInfo(id);
     }
 
-    protected void updateTasks(Tasks selectedTask) {
+    protected void updateTask(Task selectedTask) {
 
-        ListStore.updateTasks(selectedTask);
+        ListStore.updateTask(selectedTask);
     }
 
-    protected List<Tasks> searchByPriority(int p) {
+    protected List<Task> searchByPriority(int p) {
         return ListStore.searchByPriority(p);
     }
 
-    protected List<Tasks> searchByCategory(String category) {
+    protected List<Task> searchByCategory(String category) {
 
 
         return ListStore.searchByCategory(category);
     }
 
 
-    public void deleteTasks(int selectedID) {
-        ListStore.deleteTasks(selectedID);
+    public void deleteTask(int selectedID) {
+        ListStore.deleteTask(selectedID);
     }
 
-    public Tasks getDetailsByID(int selectedID) {
-        return ListStore.getDetailsBYID(selectedID);
+    public Task getDetailsByID(int selectedID) {
+        return ListStore.getDetailsByID(selectedID);
     }
 
 

@@ -18,7 +18,7 @@ public class ToDoListManager extends JFrame{
 
     private JPanel mainPanel;
 
-    private JPanel addTasksPanel;
+    private JPanel addTaskPanel;
     private JTextField tasksNameText;
     private JTextField descriptionText;
     private JComboBox <Integer>priorityComboBox;
@@ -30,7 +30,7 @@ public class ToDoListManager extends JFrame{
     private JLabel categoryLabel;
 
     private JPanel toDoListPanel;
-    private JButton completedTasksButton;
+    private JButton completedTaskButton;
     private JButton showAllTasks;
     private JLabel toDoLabel;
     private JLabel completedList;
@@ -39,7 +39,7 @@ public class ToDoListManager extends JFrame{
     private JButton searchByCategoryButton;
     private JPanel searchPanel;
     private JComboBox <String> searchByCategoryComboBox;
-    private JList <Tasks> searchList;
+    private JList <Task> searchList;
     private JLabel searchListDescriptionLabel;
     private JButton quitButton;
     private JPanel controlPanel;
@@ -49,12 +49,12 @@ public class ToDoListManager extends JFrame{
 
     static final String ALL_TASKS = "Showing all incomplete tasks";
     static final String NO_TASKS_FOUND = "No Matching tasks";
-    static final String MATCHING_TASKS = "Matching Incomplete Tasks";
+    static final String MATCHING_TASKS = "Matching Incomplete Task";
 
 
 
 
-    protected DefaultListModel<Tasks> searchListModel;
+    protected DefaultListModel<Task> searchListModel;
     DefaultComboBoxModel<Integer> priorityListModel;
     DefaultComboBoxModel <String> categoryListModel;
 
@@ -65,6 +65,14 @@ public class ToDoListManager extends JFrame{
     protected DefaultTableModel todoModel;
     protected DefaultTableModel completedModel;
 
+    //Menu Items for popUpMenu
+    //item in the menu
+    JMenuItem completedMenuItem = new JMenuItem("Completed");
+    JMenuItem deleteToDoItem = new JMenuItem("Delete"); //Add that you are about to delete this items from the list forever warning
+    JMenuItem getMoreDetails = new JMenuItem("Show Description");
+
+    JMenuItem deleteCompletedItem = new JMenuItem("Delete");
+
 
 
     // TODO Use these instead of your own Strings. The tests expect you to use these constants
@@ -74,7 +82,7 @@ public class ToDoListManager extends JFrame{
     ToDoListManager(ListController controller){
         this.controller = controller;
 
-        setTitle("To-Do Tasks Manager");
+        setTitle("To-Do Task Manager");
         setContentPane(mainPanel);
         setPreferredSize(new Dimension(800,800));
         pack();
@@ -84,20 +92,43 @@ public class ToDoListManager extends JFrame{
 
         configComboBox();
         addListener();
-
-
+        configPopUpMenu();
 
         searchListModel = new DefaultListModel<>();
         searchList.setModel(searchListModel);
 
         searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-        List<Tasks> allData = controller.loadAllTasksFromStore();
+        List<Task> allData = controller.getAllTasks();
         setListData(allData);
 
         searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 
         setUpTable();
+
+    }
+
+    private void configPopUpMenu() {
+
+//create the popup menu
+        JPopupMenu toDoClickMenu = new JPopupMenu();
+        JPopupMenu completedClickMenu = new JPopupMenu();
+
+
+
+
+//add elements into the clickMenu
+        toDoClickMenu.add(completedMenuItem);
+        toDoClickMenu.add(deleteToDoItem);
+        toDoClickMenu.add(new JSeparator());
+        toDoClickMenu.add(getMoreDetails);
+
+        completedClickMenu.add(deleteCompletedItem);
+
+        todoTable.setComponentPopupMenu(toDoClickMenu);
+        completeTable.setComponentPopupMenu(completedClickMenu);
+
+
 
     }
 
@@ -165,7 +196,7 @@ public class ToDoListManager extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-                List<Tasks> allData = controller.loadAllTasksFromStore();
+                List<Task> allData = controller.getAllTasks();
                 setListData(allData);
             }
         });
@@ -177,7 +208,7 @@ public class ToDoListManager extends JFrame{
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                boolean checkValidation;
+
                 String rawName = tasksNameText.getText();
                 String rawDesc = descriptionText.getText();
 
@@ -194,11 +225,11 @@ public class ToDoListManager extends JFrame{
                     String desc = rawDesc.trim();
                     Date dateCreated = new Date();
                     int priority =priorityComboBox.getItemAt(priorityComboBox.getSelectedIndex());
-                    String categoryTasks = categoryComboBox.getItemAt(categoryComboBox.getSelectedIndex());
-                    Tasks.TasksCategory cat = Tasks.TasksCategory.valueOf(categoryTasks);
-                    Tasks newTasks = new Tasks(name,desc,dateCreated, priority,cat );
+                    String categoryTask = categoryComboBox.getItemAt(categoryComboBox.getSelectedIndex());
+                    Task.TaskCategory cat = Task.TaskCategory.valueOf(categoryTask);
+                    Task newTask = new Task(name,desc,dateCreated, priority,cat );
 
-                    controller.addTasks(newTasks);
+                    controller.addTask(newTask);
 
                     tasksNameText.setText("");
                     descriptionText.setText("");
@@ -207,37 +238,13 @@ public class ToDoListManager extends JFrame{
 
                     updateTable();
                     searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-                    List<Tasks> allData = controller.loadAllTasksFromStore();
+                    List<Task> allData = controller.getAllTasks();
                     setListData(allData);
 
                 }
 
             }
         });
-
-//create the popup menu
-        JPopupMenu tableClickMenu = new JPopupMenu();
-        JPopupMenu completedClickMenu = new JPopupMenu();
-//item in the menu
-        JMenuItem completedMenuItem = new JMenuItem("Completed");
-        JMenuItem deleteMenuItem = new JMenuItem("Delete");
-        JMenuItem getMoreDetails = new JMenuItem("Show Description");
-
-        JMenuItem deleteCompletedItem = new JMenuItem("Delete");
-
-
-
-//add elements into the clickMenu
-        tableClickMenu.add(completedMenuItem);
-        tableClickMenu.add(deleteMenuItem);
-        tableClickMenu.add(new JSeparator());
-        tableClickMenu.add(getMoreDetails);
-
-        completedClickMenu.add(deleteCompletedItem);
-
-        todoTable.setComponentPopupMenu(tableClickMenu);
-        completeTable.setComponentPopupMenu(completedClickMenu);
-
 
 
         //To add the mouse action listener to makesure can choose the selection when mouse is being clicked
@@ -295,118 +302,20 @@ public class ToDoListManager extends JFrame{
             }
         });
 
-        deleteCompletedItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deleteSelected();
-            }
+        deleteCompletedItem.addActionListener(e -> deleteCompleted());
 
-            private void deleteSelected() {
-
-                if(completeTable.getSelectedRow()==-1){
-                    showMessageDialog("Please click on one task on the table.");
-
-                }else{
-                    Vector data = completedModel.getDataVector().elementAt(completeTable.getSelectedRow());
-                    int selectedID = (int) data.get(0);
-
-                    controller.deleteTasks(selectedID);
-                    updateTable();
-                    List<Tasks> allData = controller.loadAllTasksFromStore();
-                    setListData(allData);
-
-                    showMessageDialog("Deleted Selected Task");
-                }
-
-
-            }
-        });
 
         //when completed menu item is being selected
-        completedMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                completedSelected();
-            }
+        completedMenuItem.addActionListener(a -> completedSelected());
 
-            private void completedSelected() {
-
-                //get the data from the selected row
-                Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
-
-                int selectedID = (int) data.get(0);
-
-                Tasks getTasks = controller.searchByID(selectedID);
-
-                getTasks.setDateCompleted(new Date());
-
-                getTasks.setStatus(Tasks.TasksStatus.COMPLETED);
-
-                controller.updateTasks(getTasks);
-
-
-
-                updateTable();
-
-                searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-                List<Tasks> allData = controller.loadAllTasksFromStore();
-                setListData(allData);
-
-
-                showMessageDialog("Updated Selected Task");
-
-            }
-        });
         //if delete is being clicked
-        deleteMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deleteSelected();
-            }
+        deleteToDoItem.addActionListener(e -> deleteSelected());
 
-            private void deleteSelected() {
-
-                //get the data from the selected row
-                Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
-
-                int selectedID = (int) data.get(0);
-
-                controller.deleteTasks(selectedID);
-                updateTable();
-                List<Tasks> allData = controller.loadAllTasksFromStore();
-                setListData(allData);
-
-                showMessageDialog("Deleted Selected Task");
-            }
-        });
-
-        getMoreDetails.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                moreDetailsSelected();
-            }
-
-            private void moreDetailsSelected() {
-
-                //get the date from the selected row
-                Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
-
-                int selectedID = (int) data.get(0);
-
-                Tasks t = controller.getDetailsByID(selectedID);
-                String statement = t.getDescription();
-
-                detailsDialog(statement, "Description for " + t.getName(), JOptionPane.INFORMATION_MESSAGE);
+        getMoreDetails.addActionListener(Details -> moreDetailsSelected());
 
 
 
-
-            }
-        });
-
-
-
-        completedTasksButton.addActionListener(new ActionListener() {
+        completedTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
@@ -427,22 +336,21 @@ public class ToDoListManager extends JFrame{
                 //when there is a selection
                 if(checkIndex ==true){
                     //get the tasks value
-                    Tasks value = searchList.getSelectedValue();
+                    Task value = searchList.getSelectedValue();
 
-                    Tasks getTasks = controller.searchByID(value.getTasksID());
+                    Task getTask = controller.searchByID(value.getTaskID());
 
-                    getTasks.setDateCompleted(new Date());
+                    getTask.setDateCompleted(new Date());
 
-                    getTasks.setStatus(Tasks.TasksStatus.COMPLETED);
+                    getTask.setStatus(Task.TaskStatus.COMPLETED);
 
-                    controller.updateTasks(getTasks);
+                    controller.updateTask(getTask);
 
-                    showMessageDialog("Tasks Updated");
+                    showMessageDialog("Task Updated");
 
                     updateTable();
-
                     searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-                    List<Tasks> allData = controller.loadAllTasksFromStore();
+                    List<Task> allData = controller.getAllTasks();
                     setListData(allData);
 
                 }
@@ -453,67 +361,34 @@ public class ToDoListManager extends JFrame{
         searchByPriority.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //                    int priority =priorityComboBox.getItemAt(priorityComboBox.getSelectedIndex());
 
                 if(searchByPriorityComboBox.getSelectedIndex()<0){
                     showMessageDialog("Please select a priority level");
                 }else{
                     int p = searchByPriorityComboBox.getItemAt(searchByPriorityComboBox.getSelectedIndex());
-                    List<Tasks> searchTasks = new ArrayList<>();
-                    
-                    searchTasks = controller.searchByPriority(p);
-                    
-                    searchPResults(searchTasks);
+                    List<Task> searchTask;
+                    searchTask = controller.searchByPriority(p);
+                    PrioritySearch(searchTask);
                 }
-
                 searchByPriorityComboBox.setSelectedIndex(-1);
-            }
-
-            private void searchPResults(List<Tasks> search) {
-
-                if(search==null||search.isEmpty()){
-                    searchListModel.clear();
-                    searchListDescriptionLabel.setText(ToDoListManager.NO_TASKS_FOUND);
-                }else{
-
-                    searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
-                    setListData(search);
-                }
             }
         });
 
         searchByCategoryButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-
-
                 if(searchByCategoryComboBox.getSelectedIndex()<0){
                     showMessageDialog("Please select a category to  search for");
                 }else{
                     String categorySelected =searchByCategoryComboBox.getItemAt(searchByCategoryComboBox.getSelectedIndex());
 
-                    List<Tasks> searchTasks = new ArrayList<>();
+                    List<Task> searchTask = new ArrayList<>();
 
-                    searchTasks = controller.searchByCategory(categorySelected);
+                    searchTask = controller.searchByCategory(categorySelected);
 
-                    searchCategoryResults(searchTasks);
+                    searchCategoryResults(searchTask);
                 }
                 searchByCategoryComboBox.setSelectedIndex(-1);
-
-            }
-
-            private void searchCategoryResults(List<Tasks> search) {
-
-                if(search==null||search.isEmpty()){
-                    searchListModel.clear();
-                    searchListDescriptionLabel.setText(ToDoListManager.NO_TASKS_FOUND);
-                }else{
-
-                    searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
-                    setListData(search);
-                }
-
             }
         });
 
@@ -521,39 +396,152 @@ public class ToDoListManager extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                //int selectedIndex;
-                Tasks t;
+                //initialize the Task object
+                Task t;
 
                 if(searchList.getSelectedValue() == null){
                     showMessageDialog("Please select one task from the table below to edit");
                 }else{
                     t = searchList.getSelectedValue();
-                    proceedEdit(t);
+                    editTask(t);
                 }
 
             }
 
-            private void proceedEdit(Tasks t) {
-                String newDescription = showInputDialog("Enter text for your new description");
-                t.setDescription(newDescription);
-                controller.updateTasks(t);
-                updateTable();
 
-                searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-                List<Tasks> allData = controller.loadAllTasksFromStore();
-                setListData(allData);
-
-            }
         });
 
 
     }
 
-    void setListData(List<Tasks> data) {
+    private void deleteCompleted() {
+
+        if(completeTable.getSelectedRow()<0){
+            detailsDialog("Please select a row before proceed", "Error",JOptionPane.ERROR_MESSAGE );
+
+        }else{
+            Vector data = completedModel.getDataVector().elementAt(completeTable.getSelectedRow());
+            int selectedID = (int) data.get(0);
+
+            controller.deleteTask(selectedID);
+            updateTable();
+            List<Task> allData = controller.getAllTasks();
+            setListData(allData);
+
+            showMessageDialog("Deleted Selected Task");
+        }
+    }
+    private void PrioritySearch(List<Task> results) {
+
+        if(results==null||results.isEmpty()){
+            searchListModel.clear();
+            searchListDescriptionLabel.setText(ToDoListManager.NO_TASKS_FOUND);
+        }else{
+
+            searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
+            setListData(results);
+        }
+    }
+
+    private void searchCategoryResults(List<Task> search) {
+
+        if(search==null||search.isEmpty()){
+            searchListModel.clear();
+            searchListDescriptionLabel.setText(ToDoListManager.NO_TASKS_FOUND);
+        }else{
+
+            searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
+            setListData(search);
+        }
+
+    }
+
+    private void editTask(Task t) {
+        String newDescription = showInputDialog("Enter text for your new description");
+        t.setDescription(newDescription);
+        controller.updateTask(t);
+        updateTable();
+
+        searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+        List<Task> allData = controller.getAllTasks();
+        setListData(allData);
+
+    }
+
+    private void moreDetailsSelected() {
+
+        if(todoTable.getSelectedRow()<0){
+            detailsDialog("Please select a row before proceed", "Error",JOptionPane.ERROR_MESSAGE );
+        }else{
+            //get the date from the selected row
+            Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
+
+            int selectedID = (int) data.get(0);
+
+            Task t = controller.getDetailsByID(selectedID);
+            String statement = t.getDescription();
+
+            detailsDialog(statement, "Description for " + t.getName(), JOptionPane.INFORMATION_MESSAGE);
+        }
+
+
+    }
+    private void deleteSelected() {
+
+        if(todoTable.getSelectedRow()<0){
+            detailsDialog("Please select a row before proceed", "Error",JOptionPane.ERROR_MESSAGE );
+        }else{
+            //get the data from the selected row
+            Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
+
+            int selectedID = (int) data.get(0);
+
+            controller.deleteTask(selectedID);
+            updateTable();
+            List<Task> allData = controller.getAllTasks();
+            setListData(allData);
+
+            showMessageDialog("Deleted Selected Task");
+        }
+
+    }
+
+    private void completedSelected(){
+
+        //get the data from the selected row
+        if(todoTable.getSelectedRow()<0){
+            detailsDialog("Please select a row before proceed", "Error",JOptionPane.ERROR_MESSAGE );
+        }else{
+            getSelectedValue();
+        }
+    }
+    private void getSelectedValue() {
+        Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
+
+        int selectedID = (int) data.get(0);
+
+        Task getTask = controller.searchByID(selectedID);
+
+        getTask.setDateCompleted(new Date());
+
+        getTask.setStatus(Task.TaskStatus.COMPLETED);
+
+        controller.updateTask(getTask);
+
+        updateTable();
+
+        searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+        List<Task> allData = controller.getAllTasks();
+        setListData(allData);
+
+        showMessageDialog("Updated Selected Task");
+    }
+
+    void setListData(List<Task> data) {
 
         searchListModel.clear();
         if(data != null){
-            for(Tasks t : data){
+            for(Task t : data){
                 searchListModel.addElement(t);
             }
         }

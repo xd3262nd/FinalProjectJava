@@ -26,7 +26,7 @@ public class ListStore {
     }
 
 
-    public static Vector<Vector> getAllincompleteData() {
+    public static Vector<Vector> AllIncompleteData() {
 
         String sqlQuery = "SELECT rowid,* FROM todos WHERE status='INCOMPLETE'";
         try(Connection conn = DriverManager.getConnection(dbURI);
@@ -42,14 +42,12 @@ Id, taskName, priority, category
             while(rsIncomData.next()){
                 int id = rsIncomData.getInt("rowid");
                 String name = rsIncomData.getString("taskName");
-                //String desc = rsIncomData.getString("description");
                 int prio = rsIncomData.getInt("priority");
                 String category = rsIncomData.getString("category");
 
                 Vector v = new Vector();
                 v.add(id);
                 v.add(name);
-                //v.add(desc);
                 v.add(prio);
                 v.add(category);
 
@@ -66,7 +64,7 @@ Id, taskName, priority, category
 
     }
 
-    public static Vector<Vector> getAllcompletedData() {
+    public static Vector<Vector> AllCompletedData() {
         String sqlQuery = "SELECT rowid,* FROM todos WHERE status='COMPLETED'";
 
         try(Connection conn = DriverManager.getConnection(dbURI);
@@ -106,9 +104,9 @@ Id, taskName, priority, category
     }
 
 
-    public static List<Tasks> getAllData() {
+    public static List<Task> getAllData() {
 
-        List<Tasks> allRecords = new ArrayList<>();
+        List<Task> allRecords = new ArrayList<>();
 
         try(Connection conn = DriverManager.getConnection(dbURI);
              Statement stat = conn.createStatement()){
@@ -124,10 +122,10 @@ Id, taskName, priority, category
                 int prio = rsall.getInt("priority");
 
                 String category = rsall.getString("category");
-                Tasks.TasksCategory cat = Tasks.TasksCategory.valueOf(category);
+                Task.TaskCategory cat = Task.TaskCategory.valueOf(category);
 
                 String status = rsall.getString("status");
-                Tasks.TasksStatus statusTasks = Tasks.TasksStatus.valueOf(status);
+                Task.TaskStatus statusTask = Task.TaskStatus.valueOf(status);
 
                 Date dateCreated = new Date(rsall.getLong("dateCreated"));
 
@@ -139,8 +137,8 @@ Id, taskName, priority, category
                     dateCompleted =new Date(rsall.getLong("dateCompleted"));
                 }
 
-    //int id, String name, String desc, Date dateCreated, int p, TasksCategory cate, Date dateCompleted, TasksStatus status
-                Tasks task = new Tasks(id,name, desc, dateCreated, prio, cat, dateCompleted, statusTasks);
+    //int id, String name, String desc, Date dateCreated, int p, TaskCategory cate, Date dateCompleted, TaskStatus status
+                Task task = new Task(id,name, desc, dateCreated, prio, cat, dateCompleted, statusTask);
 
                 allRecords.add(task);
 
@@ -163,26 +161,26 @@ Id, taskName, priority, category
         Vector<String> columnNames = new Vector<>();
 
         columnNames.add("TaskID");
-        columnNames.add("Tasks");
+        columnNames.add("Task");
         columnNames.add("Priority");
         columnNames.add("Category");
         return columnNames;
     }
 
-    public static void add(Tasks newTasks) throws SQLException {
+    public static void add(Task newTask) throws SQLException {
 
         Connection conn = DriverManager.getConnection(dbURI);
         PreparedStatement pst = conn.prepareStatement("insert into todos values(?,?,?,?,?,?,?)");
 
         //n, d, p, c, dc, dc, s
-        String name = newTasks.getName();
-        String desc = newTasks.getDescription();
-        int priority = newTasks.getPriority();
-        String category = String.valueOf(newTasks.getCategory());
+        String name = newTask.getName();
+        String desc = newTask.getDescription();
+        int priority = newTask.getPriority();
+        String category = String.valueOf(newTask.getCategory());
 
-        Long dateCreatedInt = newTasks.getDateCreated().getTime();
+        Long dateCreatedInt = newTask.getDateCreated().getTime();
 
-        String status = String.valueOf(newTasks.getStatus());
+        String status = String.valueOf(newTask.getStatus());
 
         pst.setString(1, name);
         pst.setString(2, desc);
@@ -190,10 +188,10 @@ Id, taskName, priority, category
         pst.setString(4, category);
         pst.setLong(5, dateCreatedInt);
         pst.setString(7,status);
-        if(newTasks.getDateCompleted()==null){
+        if(newTask.getDateCompleted()==null){
             pst.setLong(6,0);
         }else{
-            Long dateCompletedInt = newTasks.getDateCompleted().getTime();
+            Long dateCompletedInt = newTask.getDateCompleted().getTime();
             pst.setLong(6,dateCompletedInt);
         }
         pst.execute();
@@ -203,11 +201,11 @@ Id, taskName, priority, category
 
         while(generateID.next()){
             int rowID = generateID.getInt(1);
-            newTasks.setTasksID(rowID);
+            newTask.setTaskID(rowID);
         }
     }
 
-    public static Tasks getTasksInfo(int id) {
+    public static Task getTaskInfo(int id) {
 
         try(Connection c = DriverManager.getConnection(dbURI);
              PreparedStatement ps = c.prepareStatement("SELECT * FROM todos WHERE rowid = ?")){
@@ -230,15 +228,15 @@ Id, taskName, priority, category
                 int priority = rs.getInt("priority");
 
                 String categoryDB = rs.getString("category");
-                Tasks.TasksCategory categoryTasks = Tasks.TasksCategory.valueOf(categoryDB);
+                Task.TaskCategory categoryTask = Task.TaskCategory.valueOf(categoryDB);
 
                 Date dateCompleted = new Date(rs.getLong("dateCompleted"));
 
                 String statusDB = rs.getString("status");
-                Tasks.TasksStatus statusT = Tasks.TasksStatus.valueOf(statusDB);
+                Task.TaskStatus statusT = Task.TaskStatus.valueOf(statusDB);
 
 
-                Tasks t = new Tasks(id, name, desc,dateCreated, priority, categoryTasks, dateCompleted, statusT);
+                Task t = new Task(id, name, desc,dateCreated, priority, categoryTask, dateCompleted, statusT);
                 return t;
             }
 
@@ -251,12 +249,12 @@ Id, taskName, priority, category
     }
 
 
-    public static void updateTasks(Tasks task) {
+    public static void updateTask(Task task) {
 
         try(Connection conn = DriverManager.getConnection(dbURI);
              PreparedStatement pst = conn.prepareStatement("UPDATE todos SET taskName =?, description =?, dateCreated=?, priority=?, category=?, dateCompleted=?, status=? WHERE rowid =?")){
 
-            int id = task.getTasksID();
+            int id = task.getTaskID();
             String name = task.getName();
             String desc = task.getDescription();
 
@@ -291,7 +289,7 @@ Id, taskName, priority, category
         }
     }
 
-    public static List<Tasks> searchByPriority(int p) {
+    public static List<Task> searchByPriority(int p) {
 
         try(Connection c = DriverManager.getConnection(dbURI);
             PreparedStatement pst = c.prepareStatement("SELECT rowid,* FROM todos WHERE priority= ? AND status = ? ORDER BY category")){
@@ -299,7 +297,7 @@ Id, taskName, priority, category
             pst.setInt(1, p);
             pst.setString(2, "INCOMPLETE");
 
-            List<Tasks> searchList = new ArrayList<>();
+            List<Task> searchList = new ArrayList<>();
 
             ResultSet rsP = pst.executeQuery();
 
@@ -310,12 +308,12 @@ Id, taskName, priority, category
                 Date dateCreated = new Date(rsP.getLong("dateCreated"));
                 int priority = rsP.getInt("priority");
                 String categoryDB = rsP.getString("category");
-                Tasks.TasksCategory categoryT = Tasks.TasksCategory.valueOf(categoryDB);
+                Task.TaskCategory categoryT = Task.TaskCategory.valueOf(categoryDB);
                 Date dateCompleted = new Date(rsP.getLong("dateCompleted"));
                 String statusDB = rsP.getString("status");
-                Tasks.TasksStatus statusT = Tasks.TasksStatus.valueOf(statusDB);
+                Task.TaskStatus statusT = Task.TaskStatus.valueOf(statusDB);
 
-                Tasks t = new Tasks(id, name, desc, dateCreated, priority, categoryT, dateCompleted, statusT);
+                Task t = new Task(id, name, desc, dateCreated, priority, categoryT, dateCompleted, statusT);
                 searchList.add(t);
 
             }
@@ -327,14 +325,14 @@ Id, taskName, priority, category
         }
     }
 
-    public static List<Tasks> searchByCategory(String category) {
+    public static List<Task> searchByCategory(String category) {
         try(Connection c = DriverManager.getConnection(dbURI);
              PreparedStatement pst = c.prepareStatement("SELECT  rowid, * FROM todos WHERE category =? AND status =? ORDER BY category")){
             
             pst.setString(1, category);
             pst.setString(2, "INCOMPLETE");
 
-            List<Tasks> searchList = new ArrayList<>();
+            List<Task> searchList = new ArrayList<>();
 
             ResultSet rsCategory = pst.executeQuery();
 
@@ -345,12 +343,12 @@ Id, taskName, priority, category
                 Date dateCreated = new Date(rsCategory.getLong("dateCreated"));
                 int priority = rsCategory.getInt("priority");
                 String categoryDB = rsCategory.getString("category");
-                Tasks.TasksCategory categoryT = Tasks.TasksCategory.valueOf(categoryDB);
+                Task.TaskCategory categoryT = Task.TaskCategory.valueOf(categoryDB);
                 Date dateCompleted = new Date(rsCategory.getLong("dateCompleted"));
                 String statusDB = rsCategory.getString("status");
-                Tasks.TasksStatus statusT = Tasks.TasksStatus.valueOf(statusDB);
+                Task.TaskStatus statusT = Task.TaskStatus.valueOf(statusDB);
 
-                Tasks t = new Tasks(id, name, desc, dateCreated, priority, categoryT, dateCompleted, statusT);
+                Task t = new Task(id, name, desc, dateCreated, priority, categoryT, dateCompleted, statusT);
                 searchList.add(t);
 
             }
@@ -367,7 +365,7 @@ Id, taskName, priority, category
     }
 
 
-    public static void deleteTasks(int ID) {
+    public static void deleteTask(int ID) {
         try(Connection c= DriverManager.getConnection(dbURI);
             PreparedStatement pst = c.prepareStatement("DELETE FROM todos WHERE rowid= ?")){
 
@@ -380,7 +378,7 @@ Id, taskName, priority, category
 
     }
 
-    public static Tasks getDetailsBYID(int ID) {
+    public static Task getDetailsByID(int ID) {
         try(Connection c= DriverManager.getConnection(dbURI);
             PreparedStatement pst = c.prepareStatement("SELECT rowid,* FROM todos WHERE rowid = ?")){
 
@@ -388,20 +386,20 @@ Id, taskName, priority, category
 
             ResultSet rs = pst.executeQuery();
 
-            Tasks t = null;
-            while(rs.next()){
+            Task t = null;
+            if(rs.next()){
                 int id = rs.getInt("rowid");
                 String name = rs.getString("taskName");
                 String desc = rs.getString("description");
                 Date dateCreated = new Date(rs.getLong("dateCreated"));
                 int priority = rs.getInt("priority");
                 String categoryDB = rs.getString("category");
-                Tasks.TasksCategory categoryT = Tasks.TasksCategory.valueOf(categoryDB);
+                Task.TaskCategory categoryT = Task.TaskCategory.valueOf(categoryDB);
                 Date dateCompleted = new Date(rs.getLong("dateCompleted"));
                 String statusDB = rs.getString("status");
-                Tasks.TasksStatus statusT = Tasks.TasksStatus.valueOf(statusDB);
+                Task.TaskStatus statusT = Task.TaskStatus.valueOf(statusDB);
 
-                t = new Tasks(id, name, desc, dateCreated, priority, categoryT, dateCompleted, statusT);
+                t = new Task(id, name, desc, dateCreated, priority, categoryT, dateCompleted, statusT);
 
 
             }

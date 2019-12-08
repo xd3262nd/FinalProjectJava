@@ -1,12 +1,12 @@
 import java.util.Date;
 
-public class Tasks {
+public class Task {
 
-    enum TasksStatus{
+    enum TaskStatus{
         INCOMPLETE, COMPLETED
     }
 
-    enum TasksCategory{
+    enum TaskCategory{
         PERSONAL, WORK
     }
 
@@ -19,21 +19,21 @@ public class Tasks {
 
     private Date dateCompleted;
 
-    private TasksStatus status;
+    private TaskStatus status;
 
-    private TasksCategory category;
+    private TaskCategory category;
 
-    //constructor for adding new Tasks
-    public Tasks(String name, String desc, Date dateCreated, int p, TasksCategory cate){
+    //constructor for adding new Task
+    public Task(String name, String desc, Date dateCreated, int p, TaskCategory cate){
         this.name = name;
         this.description = desc;
         this.dateCreated=dateCreated;
         this.priority = p;
-        this.status = TasksStatus.INCOMPLETE;
+        this.status = TaskStatus.INCOMPLETE;
         this.category = cate;
     }
 
-    public Tasks(int id, String name, String desc, Date dateCreated, int p, TasksCategory cate, Date dateCompleted, TasksStatus status ){
+    public Task(int id, String name, String desc, Date dateCreated, int p, TaskCategory cate, Date dateCompleted, TaskStatus status ){
         this.tasksID=id;
         this.name=name;
         this.description=desc;
@@ -45,7 +45,7 @@ public class Tasks {
     }
 //TODO if only need this
 //    //constructor to be return for the table
-//    public Tasks(String name, String desc, int p, TasksCategory cate){
+//    public Task(String name, String desc, int p, TaskCategory cate){
 //        this.name = name;
 //        this.description = desc;
 //        this.priority = p;
@@ -55,11 +55,11 @@ public class Tasks {
 
 
     //getter and setter for each variables
-    public int getTasksID() {
+    public int getTaskID() {
         return tasksID;
     }
 
-    public void setTasksID(int tasksID) {
+    public void setTaskID(int tasksID) {
         this.tasksID = tasksID;
     }
 
@@ -103,19 +103,19 @@ public class Tasks {
         this.dateCompleted = dateCompleted;
     }
 
-    public TasksStatus getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(TasksStatus status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
-    public TasksCategory getCategory() {
+    public TaskCategory getCategory() {
         return category;
     }
 
-    public void setCategory(TasksCategory category) {
+    public void setCategory(TaskCategory category) {
         this.category = category;
     }
 
@@ -124,7 +124,7 @@ public class Tasks {
 
     public String toString(){
 
-        String statement = String.format("ID: %d, Tasks: %s, Description: %s, Priority: %d, Category: %s, Created on: %s. ",
+        String statement = String.format("ID: %d, Task: %s, Description: %s, Priority: %d, Category: %s, Created on: %s. ",
                 this.tasksID, this.name, this.description, this.priority, category.name(), this.dateCreated);
 
         if(dateCompleted !=null && dateCompleted.getTime() !=0){
