@@ -47,8 +47,13 @@ public class ListController {
     }
 
     protected Task searchByID(int id) {
-        return ListStore.getTaskInfo(id);
+
+        return ListStore.getTaskInfoByID(id);
     }
+//    public Task getDetailsByID(int selectedID) {
+//
+//        return ListStore.getDetailsByID(selectedID);
+//    }
 
     protected void updateTask(Task selectedTask) {
 
@@ -70,9 +75,7 @@ public class ListController {
         ListStore.deleteTask(selectedID);
     }
 
-    public Task getDetailsByID(int selectedID) {
-        return ListStore.getDetailsByID(selectedID);
-    }
+
 
 
 //closing

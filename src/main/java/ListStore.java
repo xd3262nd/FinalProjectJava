@@ -205,10 +205,10 @@ Id, taskName, priority, category
         }
     }
 
-    public static Task getTaskInfo(int id) {
+    public static Task getTaskInfoByID(int id) {
 
         try(Connection c = DriverManager.getConnection(dbURI);
-             PreparedStatement ps = c.prepareStatement("SELECT * FROM todos WHERE rowid = ?")){
+             PreparedStatement ps = c.prepareStatement("SELECT rowid,* FROM todos WHERE rowid = ?")){
 
             ResultSet rs;
 
@@ -216,37 +216,30 @@ Id, taskName, priority, category
 
             rs=ps.executeQuery();
 
-            if(!rs.next()){
-                return null;
-            }else{
-                //dc, p, dc, s
+            Task t = null;
+            if(rs.next()){
+
                 String name = rs.getString("taskName");
                 String desc = rs.getString("description");
-
                 Date dateCreated = new Date(rs.getLong("dateCreated"));
-
                 int priority = rs.getInt("priority");
-
                 String categoryDB = rs.getString("category");
-                Task.TaskCategory categoryTask = Task.TaskCategory.valueOf(categoryDB);
-
+                Task.TaskCategory categoryT = Task.TaskCategory.valueOf(categoryDB);
                 Date dateCompleted = new Date(rs.getLong("dateCompleted"));
-
                 String statusDB = rs.getString("status");
                 Task.TaskStatus statusT = Task.TaskStatus.valueOf(statusDB);
 
+                t = new Task(id, name, desc, dateCreated, priority, categoryT, dateCompleted, statusT);
 
-                Task t = new Task(id, name, desc,dateCreated, priority, categoryTask, dateCompleted, statusT);
-                return t;
             }
-
-
+            return t;
 
         }catch(SQLException s){
             System.out.println(s.getMessage()+s);
             return null;
         }
     }
+
 
 
     public static void updateTask(Task task) {
@@ -378,39 +371,5 @@ Id, taskName, priority, category
 
     }
 
-    public static Task getDetailsByID(int ID) {
-        try(Connection c= DriverManager.getConnection(dbURI);
-            PreparedStatement pst = c.prepareStatement("SELECT rowid,* FROM todos WHERE rowid = ?")){
 
-            pst.setInt(1,ID );
-
-            ResultSet rs = pst.executeQuery();
-
-            Task t = null;
-            if(rs.next()){
-                int id = rs.getInt("rowid");
-                String name = rs.getString("taskName");
-                String desc = rs.getString("description");
-                Date dateCreated = new Date(rs.getLong("dateCreated"));
-                int priority = rs.getInt("priority");
-                String categoryDB = rs.getString("category");
-                Task.TaskCategory categoryT = Task.TaskCategory.valueOf(categoryDB);
-                Date dateCompleted = new Date(rs.getLong("dateCompleted"));
-                String statusDB = rs.getString("status");
-                Task.TaskStatus statusT = Task.TaskStatus.valueOf(statusDB);
-
-                t = new Task(id, name, desc, dateCreated, priority, categoryT, dateCompleted, statusT);
-
-
-            }
-            return t;
-
-
-        }catch(SQLException se){
-            System.out.println(se);
-            return null;
-        }
-
-
-    }
 }
