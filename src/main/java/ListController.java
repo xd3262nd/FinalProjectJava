@@ -50,10 +50,6 @@ public class ListController {
 
         return ListStore.getTaskInfoByID(id);
     }
-//    public Task getDetailsByID(int selectedID) {
-//
-//        return ListStore.getDetailsByID(selectedID);
-//    }
 
     protected void updateTask(Task selectedTask) {
 

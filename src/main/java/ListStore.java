@@ -11,8 +11,9 @@ public class ListStore {
 
 
     ListStore(String databaseURI){
-        this.dbURI = databaseURI;
 
+        dbURI = databaseURI;
+        //this will run when the program started
         try(Connection conn = DriverManager.getConnection(databaseURI);
             Statement stat = conn.createStatement()){
 
@@ -27,17 +28,14 @@ public class ListStore {
 
 
     public static Vector<Vector> AllIncompleteData() {
-
+        //get data to be printed into the JTable for incomplete data
         String sqlQuery = "SELECT rowid,* FROM todos WHERE status='INCOMPLETE'";
+
         try(Connection conn = DriverManager.getConnection(dbURI);
              Statement stat = conn.createStatement()){
 
             ResultSet rsIncomData = stat.executeQuery(sqlQuery);
             Vector<Vector> vectors = new Vector<>();
-
-            /*
-Id, taskName, priority, category
-             */
 
             while(rsIncomData.next()){
                 int id = rsIncomData.getInt("rowid");
@@ -65,6 +63,7 @@ Id, taskName, priority, category
     }
 
     public static Vector<Vector> AllCompletedData() {
+
         String sqlQuery = "SELECT rowid,* FROM todos WHERE status='COMPLETED'";
 
         try(Connection conn = DriverManager.getConnection(dbURI);
@@ -72,9 +71,6 @@ Id, taskName, priority, category
             ResultSet rsIncomData = stat.executeQuery(sqlQuery);
 
             Vector<Vector> vectors = new Vector<>();
-            /*
-Id, taskName, priority, category
-             */
 
             while(rsIncomData.next()){
                 String name = rsIncomData.getString("taskName");
@@ -85,7 +81,6 @@ Id, taskName, priority, category
                 Vector v = new Vector();
                 v.add(id);
                 v.add(name);
-                //v.add(desc);
                 v.add(prio);
                 v.add(category);
 
@@ -137,12 +132,9 @@ Id, taskName, priority, category
                     dateCompleted =new Date(rsall.getLong("dateCompleted"));
                 }
 
-    //int id, String name, String desc, Date dateCreated, int p, TaskCategory cate, Date dateCompleted, TaskStatus status
                 Task task = new Task(id,name, desc, dateCreated, prio, cat, dateCompleted, statusTask);
 
                 allRecords.add(task);
-
-
             }
             return allRecords;
 
@@ -152,10 +144,7 @@ Id, taskName, priority, category
             System.out.println(s.getMessage() + s);
             return null;
         }
-
-
     }
-
 
     static Vector getColumnNames() {
         Vector<String> columnNames = new Vector<>();
@@ -353,8 +342,7 @@ Id, taskName, priority, category
             System.out.println(se + se.getMessage());
             return null;
         }
-        
-        
+
     }
 
 
