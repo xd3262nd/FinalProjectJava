@@ -1,13 +1,10 @@
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
 public class ListStore {
 
     private static String dbURI;
-    SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
 
 
     ListStore(String databaseURI){
@@ -16,7 +13,7 @@ public class ListStore {
         //this will run when the program started
         try(Connection conn = DriverManager.getConnection(databaseURI);
             Statement stat = conn.createStatement()){
-
+            //TODO google how to fix this to makesure is for the sqlite
             String createTable = "CREATE Table if not exists todos (taskName TEXT NOT NULL, description TEXT NOT NULL, priority INTEGER NOT NULL CHECK ( priority>=1 and priority<=5 ), category TEXT NOT Null Check(category = 'PERSONAL' or category ='WORK'), dateCreated INTEGER, dateCompleted INTEGER, status TEXT NOT NULL Check ( status = 'COMPLETED' or status='INCOMPLETE' ));";
 
             stat.executeUpdate(createTable);
