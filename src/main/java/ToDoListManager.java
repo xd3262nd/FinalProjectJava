@@ -289,7 +289,8 @@ public class ToDoListManager extends JFrame{
 
     private void allTasksAction() {
         //to get all tasks
-        searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+       // searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+
         List<Task> allData = controller.getAllTasks();
         setListData(allData);
     }
@@ -298,12 +299,39 @@ public class ToDoListManager extends JFrame{
         //initialize the Task object
         Task t;
 
-        if(searchList.getSelectedValue() == null){
-            showMessageDialog("Please select one task from the table below to edit");
-        }else{
-            t = searchList.getSelectedValue();
-            editTask(t);
+        Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
+        if(data.size()<0){
+            //makesure the user select a row before right clicked
+            System.out.println(data.size());
+            detailsDialog("Please select a row before proceed", "Error",JOptionPane.ERROR_MESSAGE );
+
+        } else {
+
+            System.out.println(data);
+
         }
+
+        //get the selected ID Number on the index 0
+//        int selectedID = (int) data.get(0);
+//        String taskName = (String)data.get(1);
+//        //called on the controller to delete Task from the database
+//        controller.deleteTask(selectedID);
+//        //refresh the table
+//        updateTable();
+//        List<Task> allData = controller.getAllTasks();
+//        setListData(allData);
+//        //inform the user that it has been deleted
+//        detailsDialog("Successfully deleted " + taskName, "Message", JOptionPane.INFORMATION_MESSAGE);
+
+//        if(searchList.getSelectedValue() == null){
+//            showMessageDialog("Please select one task from the table below to edit");
+//        }else{
+//            t = searchList.getSelectedValue();
+//            editTask(t);
+//        }
+
+
+
     }
 
     private void categorySearchAction() {
@@ -335,6 +363,7 @@ public class ToDoListManager extends JFrame{
         searchByPriorityComboBox.setSelectedIndex(-1);
     }
 
+    //TODO might need to delete this if i am using search GUI
     private void completedTaskAction() {
         searchList.setSelectedIndex(-1);
         //get the index for the selection
@@ -539,9 +568,12 @@ public class ToDoListManager extends JFrame{
         //update the task on JList and JTable
         controller.updateTask(getTask);
         updateTable();
-        searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-        List<Task> allData = controller.getAllTasks();
-        setListData(allData);
+
+
+        //TODO not sure if I will need this
+//        searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+//        List<Task> allData = controller.getAllTasks();
+//        setListData(allData);
         //informing the user about the update
         detailsDialog("Updated this " + taskName +" as completed", "Message", JOptionPane.INFORMATION_MESSAGE);
 

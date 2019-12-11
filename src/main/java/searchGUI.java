@@ -27,6 +27,7 @@ public class searchGUI extends JFrame {
 
     searchGUI(ToDoListManager parentComponent){
         this.parentComponent = parentComponent;
+
         setContentPane(searchPanel);
         pack();
         setVisible(true);
