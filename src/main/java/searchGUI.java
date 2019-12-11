@@ -7,14 +7,7 @@ import java.util.List;
 public class searchGUI extends JFrame {
 
     private JList <Task>  searchList;
-    private JComboBox <Integer> searchByPriorityComboBox;
-    private JComboBox  <String>  searchByCategoryComboBox;
-    private JButton searchByPriority;
-    private JButton searchByCategoryButton;
     private JLabel searchListDescriptionLabel;
-    private JButton completedTaskButton;
-    private JButton editButton;
-    private JButton showAllTasks;
     private JPanel searchPanel;
     private JButton backToMainButton;
 
@@ -27,6 +20,8 @@ public class searchGUI extends JFrame {
 
     searchGUI(ToDoListManager parentComponent){
         this.parentComponent = parentComponent;
+
+        setTitle("Search List");
 
         setContentPane(searchPanel);
         pack();

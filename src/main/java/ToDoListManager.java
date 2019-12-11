@@ -275,7 +275,7 @@ public class ToDoListManager extends JFrame{
         //when the get more details menu item (ToDoTable) is being clicked
         getMoreDetails.addActionListener(Details -> moreDetailsSelected());
 
-        completedTaskButton.addActionListener(e -> completedTaskAction());
+        //completedTaskButton.addActionListener(e -> completedTaskAction());
 
         searchByPriority.addActionListener(e -> prioritySearchAction());
 
@@ -364,45 +364,45 @@ public class ToDoListManager extends JFrame{
         searchByPriorityComboBox.setSelectedIndex(-1);
     }
 
-    //TODO might need to delete this if i am using search GUI
-    private void completedTaskAction() {
-        searchList.setSelectedIndex(-1);
-        //get the index for the selection
-        int index = searchList.getSelectedIndex();
-
-        //checking for selection
-        boolean checkIndex = false;
-        //if the index is not being selected
-        if(index<0){
-            showMessageDialog("No tasks being selected");
-        }else{
-            //change the validation when there is a selected on the JList
-            checkIndex = true;
-        }
-
-        //when there is a selection
-        if(checkIndex){
-            //get the value
-            Task value = searchList.getSelectedValue();
-            //calling the controller to ge the Task by TaskID
-            Task getTask = controller.searchByID(value.getTaskID());
-            //setting up the completed date
-            getTask.setDateCompleted(new Date());
-            //set the status
-            getTask.setStatus(Task.TaskStatus.COMPLETED);
-            //update the selected task
-            controller.updateTask(getTask);
-
-            showMessageDialog("Task has Updated");
-            //refresh the Table acoordingly
-            updateTable();
-            searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-            //Show the new list in the JList
-            List<Task> allData = controller.getAllTasks();
-            setListData(allData, ToDoListManager.ALL_TASKS);
-
-        }
-    }
+//    //TODO might need to delete this if i am using search GUI
+//    private void completedTaskAction() {
+//        searchList.setSelectedIndex(-1);
+//        //get the index for the selection
+//        int index = searchList.getSelectedIndex();
+//
+//        //checking for selection
+//        boolean checkIndex = false;
+//        //if the index is not being selected
+//        if(index<0){
+//            showMessageDialog("No tasks being selected");
+//        }else{
+//            //change the validation when there is a selected on the JList
+//            checkIndex = true;
+//        }
+//
+//        //when there is a selection
+//        if(checkIndex){
+//            //get the value
+//            Task value = searchList.getSelectedValue();
+//            //calling the controller to ge the Task by TaskID
+//            Task getTask = controller.searchByID(value.getTaskID());
+//            //setting up the completed date
+//            getTask.setDateCompleted(new Date());
+//            //set the status
+//            getTask.setStatus(Task.TaskStatus.COMPLETED);
+//            //update the selected task
+//            controller.updateTask(getTask);
+//
+//            showMessageDialog("Task has Updated");
+//            //refresh the Table acoordingly
+//            updateTable();
+//            searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+//            //Show the new list in the JList
+//            List<Task> allData = controller.getAllTasks();
+//            setListData(allData, ToDoListManager.ALL_TASKS);
+//
+//        }
+//    }
 
     private void addTaskAction() {
         //get the value to add as a new task
@@ -477,31 +477,54 @@ public class ToDoListManager extends JFrame{
 
         //if there is nothing in the result
         if(results==null||results.isEmpty()){
-            searchListModel.clear();
-            searchListDescriptionLabel.setText(ToDoListManager.NO_TASKS_FOUND);
+            //searchListModel.clear();
+            //searchListDescriptionLabel.setText(ToDoListManager.NO_TASKS_FOUND);
+            showMessageDialog(ToDoListManager.NO_TASKS_FOUND);
         } else {
             //if there is results on the list
-            searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
+            //searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
             //get the list printed on the JList
-            setListData(results, ToDoListManager.ALL_TASKS);
+            setListData(results, ToDoListManager.MATCHING_TASKS);
         }
     }
 
     private void editTask(Task t) {
         //get the new description
         String newDescription = showInputDialog("Enter text for your new description");
-        //change the description on the Task Object
-        t.setDescription(newDescription);
-        //update the Task object on Database too
-        controller.updateTask(t);
 
-        //refresh the jtable and jlist
-        updateTable();
-        showMessageDialog( t.getName() + "\'s description has been updated");
-        //searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-        String updateMsg = "Updated List";
-        List<Task> allData = controller.getAllTasks();
-        setListData(allData, updateMsg);
+        boolean validate = false;
+
+        if(newDescription!=null && !newDescription.isEmpty()){
+            validate = true;
+
+        } else if (newDescription == null) {
+            showMessageDialog("You have cancel to edit your task. Please try again");
+
+        } else{
+            showMessageDialog("You do not enter any description. Please try again");
+            newDescription = showInputDialog("Try again");
+            continue;
+        }
+
+
+
+        if(validate){
+            //change the description on the Task Object
+            t.setDescription(newDescription);
+            //update the Task object on Database too
+            controller.updateTask(t);
+
+            //refresh the jtable and jlist
+            updateTable();
+            showMessageDialog( t.getName() + "\'s description has been updated");
+            //searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+            String updateMsg = "Updated List";
+            List<Task> allData = controller.getAllTasks();
+            setListData(allData, updateMsg);
+        }
+
+
+
 
     }
 
