@@ -91,10 +91,7 @@ public class ListStore {
 
             return null;
         }
-
-
     }
-
 
     public static List<Task> getAllData() {
 
