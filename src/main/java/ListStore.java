@@ -14,7 +14,7 @@ public class ListStore {
         try(Connection conn = DriverManager.getConnection(databaseURI);
             Statement stat = conn.createStatement()){
             //TODO google how to fix this to makesure is for the sqlite
-            String createTable = "CREATE Table if not exists todos (taskName TEXT NOT NULL, description TEXT NOT NULL, priority INTEGER NOT NULL CHECK ( priority>=1 and priority<=5 ), category TEXT NOT Null Check(category = 'PERSONAL' or category ='WORK'), dateCreated INTEGER, dateCompleted INTEGER, status TEXT NOT NULL Check ( status = 'COMPLETED' or status='INCOMPLETE' ));";
+            String createTable = "CREATE Table if not exists todos (taskName TEXT NOT NULL UNIQUE, description TEXT NOT NULL, priority INTEGER NOT NULL CHECK ( priority>=1 and priority<=5 ), category TEXT NOT Null Check(category = 'PERSONAL' or category ='WORK'), dateCreated INTEGER, dateCompleted INTEGER, status TEXT NOT NULL Check ( status = 'COMPLETED' or status='INCOMPLETE' ));";
 
             stat.executeUpdate(createTable);
 
@@ -150,12 +150,11 @@ public class ListStore {
         return columnNames;
     }
 
-    public static void add(Task newTask) throws SQLException {
+    public static void add(Task newTask) throws SQLException{
 
         Connection conn = DriverManager.getConnection(dbURI);
         PreparedStatement pst = conn.prepareStatement("insert into todos values(?,?,?,?,?,?,?)");
 
-        //n, d, p, c, dc, dc, s
         String name = newTask.getName();
         String desc = newTask.getDescription();
         int priority = newTask.getPriority();

@@ -34,6 +34,7 @@ public class ToDoListManager extends JFrame{
     private JComboBox <Integer> searchByPriorityComboBox;
     private JButton searchByPriority;
     private JButton searchByCategoryButton;
+
     private JPanel searchPanel;
     private JComboBox <String> searchByCategoryComboBox;
     private JList <Task> searchList;
@@ -43,6 +44,7 @@ public class ToDoListManager extends JFrame{
     private JButton editButton;
     private JTable todoTable;
     private JTable completeTable;
+    private JButton searchListButton;
 
     static final String ALL_TASKS = "Showing all incomplete task(s)";
     static final String NO_TASKS_FOUND = "No Matching task";
@@ -77,6 +79,8 @@ public class ToDoListManager extends JFrame{
         setVisible(true);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+
         //method for config and event listener
         configComboBox();
         addListener();
@@ -169,6 +173,14 @@ public class ToDoListManager extends JFrame{
     }
 
     private void addListener() {
+//
+//        searchListButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//
+//                searchGUI searchAction = new searchGUI(ToDoListManager.this);
+//            }
+//        });
 
         priorityComboBox.addItemListener(e -> {
         });
@@ -385,22 +397,26 @@ public class ToDoListManager extends JFrame{
             int priority =priorityComboBox.getItemAt(priorityComboBox.getSelectedIndex());
             String categoryTask = categoryComboBox.getItemAt(categoryComboBox.getSelectedIndex());
             Task.TaskCategory category = Task.TaskCategory.valueOf(categoryTask);
+
             //added as a new Task object
             Task newTask = new Task(name, desc, dateCreated, priority, category);
             //then call upon the controller to execute code to add the new Task into the Database
-            controller.addTask(newTask);
+            boolean validateName = controller.addTask(newTask);
 
             tasksNameText.setText("");
             descriptionText.setText("");
             priorityComboBox.setSelectedIndex(-1);
             categoryComboBox.setSelectedIndex(-1);
             //refresh the table
-            updateTable();
-            detailsDialog("Added your task!", "Message", JOptionPane.INFORMATION_MESSAGE);
-            searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-            List<Task> allData = controller.getAllTasks();
-            setListData(allData);
-
+            if(validateName == false){
+                detailsDialog("Duplicate Task Name \nNo Task being added", "Error Message", JOptionPane.ERROR_MESSAGE);
+            }else{
+                updateTable();
+                detailsDialog("Added your task!", "Message", JOptionPane.INFORMATION_MESSAGE);
+                searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+                List<Task> allData = controller.getAllTasks();
+                setListData(allData);
+            }
         }
     }
 
@@ -440,31 +456,6 @@ public class ToDoListManager extends JFrame{
             setListData(results);
         }
     }
-
-//    private void PrioritySearch(List<Task> results) {
-//
-//        if(results==null||results.isEmpty()){
-//            searchListModel.clear();
-//            searchListDescriptionLabel.setText(ToDoListManager.NO_TASKS_FOUND);
-//        }else{
-//
-//            searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
-//            setListData(results);
-//        }
-//    }
-//
-//    private void searchCategoryResults(List<Task> search) {
-//
-//        if(search==null||search.isEmpty()){
-//            searchListModel.clear();
-//            searchListDescriptionLabel.setText(ToDoListManager.NO_TASKS_FOUND);
-//        }else{
-//
-//            searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
-//            setListData(search);
-//        }
-//
-//    }
 
     private void editTask(Task t) {
         //get the new description
@@ -558,12 +549,17 @@ public class ToDoListManager extends JFrame{
 
     void setListData(List<Task> data) {
         //set up to present the information into the JList with the Task data available
-        searchListModel.clear();
-        if(data != null){
-            for(Task t : data){
-                searchListModel.addElement(t);
-            }
-        }
+//        searchListModel.clear();
+//        if(data != null){
+//            for(Task t : data){
+//                searchListModel.addElement(t);
+//            }
+//        }
+
+        searchGUI searchResult = new searchGUI(ToDoListManager.this);
+        searchResult.getList(data);
+
+
     }
 
     private void configComboBox() {
