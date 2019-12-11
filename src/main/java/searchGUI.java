@@ -64,7 +64,7 @@ public class searchGUI extends JFrame {
 
     }
 
-    public void getList(List<Task> data) {
+    public void getList(List<Task> data, String msg) {
         searchListModel.clear();
         if(data != null){
             for(Task t : data){
@@ -72,6 +72,7 @@ public class searchGUI extends JFrame {
             }
         }
 
+        searchListDescriptionLabel.setText(msg);
 
     }
 }

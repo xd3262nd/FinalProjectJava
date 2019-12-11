@@ -292,22 +292,23 @@ public class ToDoListManager extends JFrame{
        // searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
 
         List<Task> allData = controller.getAllTasks();
-        setListData(allData);
+        setListData(allData, ToDoListManager.ALL_TASKS);
     }
 
     private void editTaskAction() {
         //initialize the Task object
-        Task t;
+        Task selectedTask;
 
-        Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
-        if(data.size()<0){
+        if(todoTable.getSelectedRow()<0){
             //makesure the user select a row before right clicked
-            System.out.println(data.size());
-            detailsDialog("Please select a row before proceed", "Error",JOptionPane.ERROR_MESSAGE );
+            detailsDialog("Please select a row on the to-do list before proceed", "Select a Task",JOptionPane.ERROR_MESSAGE );
 
         } else {
+            Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
+            int selectedID = (int) data.get(0);
+            selectedTask = controller.searchByID(selectedID);
+            editTask(selectedTask);
 
-            System.out.println(data);
 
         }
 
@@ -398,7 +399,7 @@ public class ToDoListManager extends JFrame{
             searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
             //Show the new list in the JList
             List<Task> allData = controller.getAllTasks();
-            setListData(allData);
+            setListData(allData, ToDoListManager.ALL_TASKS);
 
         }
     }
@@ -444,7 +445,7 @@ public class ToDoListManager extends JFrame{
                 detailsDialog("Added your task!", "Message", JOptionPane.INFORMATION_MESSAGE);
                 searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
                 List<Task> allData = controller.getAllTasks();
-                setListData(allData);
+                setListData(allData, ToDoListManager.ALL_TASKS);
             }
         }
     }
@@ -466,7 +467,7 @@ public class ToDoListManager extends JFrame{
             //refresh the table
             updateTable();
             List<Task> allData = controller.getAllTasks();
-            setListData(allData);
+            setListData(allData, ToDoListManager.ALL_TASKS);
             //inform the user that it has been deleted
             detailsDialog("Successfully deleted " + taskName, "Message", JOptionPane.INFORMATION_MESSAGE);
         }
@@ -482,7 +483,7 @@ public class ToDoListManager extends JFrame{
             //if there is results on the list
             searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
             //get the list printed on the JList
-            setListData(results);
+            setListData(results, ToDoListManager.ALL_TASKS);
         }
     }
 
@@ -496,9 +497,11 @@ public class ToDoListManager extends JFrame{
 
         //refresh the jtable and jlist
         updateTable();
-        searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+        showMessageDialog( t.getName() + "\'s description has been updated");
+        //searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
+        String updateMsg = "Updated List";
         List<Task> allData = controller.getAllTasks();
-        setListData(allData);
+        setListData(allData, updateMsg);
 
     }
 
@@ -537,7 +540,7 @@ public class ToDoListManager extends JFrame{
             //refresh the Jtable and JList
             updateTable();
             List<Task> allData = controller.getAllTasks();
-            setListData(allData);
+            setListData(allData, ToDoListManager.ALL_TASKS);
             //inform the user the task has been deleted
             detailsDialog("Successfully deleted " + taskName, "Message", JOptionPane.INFORMATION_MESSAGE);
         }
@@ -579,7 +582,7 @@ public class ToDoListManager extends JFrame{
 
     }
 
-    void setListData(List<Task> data) {
+    void setListData(List<Task> data, String msg) {
         //set up to present the information into the JList with the Task data available
 //        searchListModel.clear();
 //        if(data != null){
@@ -589,7 +592,7 @@ public class ToDoListManager extends JFrame{
 //        }
 
         searchGUI searchResult = new searchGUI(ToDoListManager.this);
-        searchResult.getList(data);
+        searchResult.getList(data, msg);
 
 
     }
