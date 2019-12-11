@@ -92,9 +92,9 @@ public class ToDoListManager extends JFrame{
         //the program will show all incomplete tasks when it starts
         searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
         //get every tasks from the Database through the controller
-        List<Task> allData = controller.getAllTasks();
+       // List<Task> allData = controller.getAllTasks();
         //call the method to loop through the List of result
-        setListData(allData);
+       // setListData(allData);
         //makesure the user can only do single selection
         searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 

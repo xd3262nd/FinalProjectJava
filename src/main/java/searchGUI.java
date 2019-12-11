@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 public class searchGUI extends JFrame {
@@ -14,10 +16,17 @@ public class searchGUI extends JFrame {
     private JButton editButton;
     private JButton showAllTasks;
     private JPanel searchPanel;
+    private JButton backToMainButton;
 
     protected DefaultListModel<Task> searchListModel;
+    final ToDoListManager parentComponent;
 
-    searchGUI(final ToDoListManager parentComponent){
+    static final String ALL_TASKS = "Showing all incomplete task(s)";
+    static final String NO_TASKS_FOUND = "No Matching task";
+    static final String MATCHING_TASKS = "Matching Task(s)";
+
+    searchGUI(ToDoListManager parentComponent){
+        this.parentComponent = parentComponent;
         setContentPane(searchPanel);
         pack();
         setVisible(true);
@@ -43,6 +52,13 @@ public class searchGUI extends JFrame {
     }
 
     private void addListener() {
+        backToMainButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentComponent.setEnabled(true);
+                searchGUI.this.dispose();
+            }
+        });
 
 
     }
