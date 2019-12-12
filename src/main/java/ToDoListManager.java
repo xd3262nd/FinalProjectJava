@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -438,7 +437,7 @@ public class ToDoListManager extends JFrame{
             priorityComboBox.setSelectedIndex(-1);
             categoryComboBox.setSelectedIndex(-1);
             //refresh the table
-            if(validateName == false){
+            if(!validateName){
                 detailsDialog("Duplicate Task Name \nNo Task being added", "Error Message", JOptionPane.ERROR_MESSAGE);
             }else{
                 updateTable();
@@ -489,39 +488,45 @@ public class ToDoListManager extends JFrame{
     }
 
     private void editTask(Task t) {
-        //get the new description
-        String newDescription = showInputDialog("Enter text for your new description");
 
-        boolean validate = false;
+        String newDesc = getDescription();
 
-        if(newDescription!=null && !newDescription.isEmpty()){
-            validate = true;
-
-        } else if (newDescription == null) {
-            showMessageDialog("You have cancel to edit your task. Please try again");
-
-        } else{
-            showMessageDialog("You do not enter any description. Please try again");
-            newDescription = showInputDialog("Try again");
-            continue;
-        }
-
-
-
-        if(validate){
+        if(newDesc!=null){
             //change the description on the Task Object
-            t.setDescription(newDescription);
+            t.setDescription(newDesc.trim());
             //update the Task object on Database too
             controller.updateTask(t);
 
             //refresh the jtable and jlist
             updateTable();
-            showMessageDialog( t.getName() + "\'s description has been updated");
+            showMessageDialog( t.getName() + "'s description has been updated");
             //searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
             String updateMsg = "Updated List";
             List<Task> allData = controller.getAllTasks();
             setListData(allData, updateMsg);
         }
+
+    }
+
+    private String getDescription() {
+        String newDescription;
+
+        while(true){
+            newDescription = showInputDialog("Enter text for your new description");
+            if(newDescription!=null && !newDescription.isEmpty() && !newDescription.trim().isEmpty()){
+                break;
+            } else if (newDescription == null) {
+                int choose = confirmationDialog("Are you sure you want to cancel to edit the selected task's description?",
+                        "Confirmation", JOptionPane.YES_NO_OPTION);
+                if(choose == JOptionPane.YES_OPTION){
+                    break;
+                }
+            } else {
+                showMessageDialog("No input has been entered. Please enter your new description for the task");
+            }
+        }
+
+        return newDescription;
 
 
 
@@ -686,6 +691,10 @@ public class ToDoListManager extends JFrame{
     protected void detailsDialog(String message, String title, int type) {
         JOptionPane.showMessageDialog(this, message, title, type);
 
+    }
+
+    protected int confirmationDialog(String message, String title, int type){
+        return JOptionPane.showConfirmDialog(this, message, title, type);
 
     }
 
