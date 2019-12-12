@@ -10,10 +10,6 @@ public class searchGUI extends JFrame {
     private JLabel searchListDescriptionLabel;
     private JPanel searchPanel;
     private JButton backToMainButton;
-//    private JLabel tasksNameLabel;
-//    private JLabel descriptionLabel;
-//    private JLabel priorityLabel;
-//    private JLabel categoryLabel;
 
     protected DefaultListModel<Task> searchListModel;
     final ToDoListManager parentComponent;
