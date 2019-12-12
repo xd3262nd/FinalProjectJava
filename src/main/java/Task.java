@@ -124,14 +124,14 @@ public class Task {
 
     public String toString(){
 
-        String statement = String.format("ID: %d, Task: %s, Description: %s, Priority: %d, Category: %s, Created on: %s. ",
+        String statement = String.format("ID: %-6d  Task: %-5s    Description: %-8s     Priority: %-8d     Category: %-8s     Created on: %-8s    ",
                 this.tasksID, this.name, this.description, this.priority, category.name(), this.dateCreated);
 
         if(dateCompleted !=null && dateCompleted.getTime() !=0){
-            statement += "Completed on: " + dateCompleted;
+            statement += String.format("   Completed on: %8s " ,dateCompleted);
         }
 
-        statement += " Status: " + status.name();
+        statement += String.format("    Status: %-5s ", status.name()) ;
 
         return statement;
 

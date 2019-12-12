@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 public class searchGUI extends JFrame {
@@ -10,13 +12,14 @@ public class searchGUI extends JFrame {
     private JLabel searchListDescriptionLabel;
     private JPanel searchPanel;
     private JButton backToMainButton;
+//    private JLabel tasksNameLabel;
+//    private JLabel descriptionLabel;
+//    private JLabel priorityLabel;
+//    private JLabel categoryLabel;
 
     protected DefaultListModel<Task> searchListModel;
     final ToDoListManager parentComponent;
 
-    static final String ALL_TASKS = "Showing all incomplete task(s)";
-    static final String NO_TASKS_FOUND = "No Matching task";
-    static final String MATCHING_TASKS = "Matching Task(s)";
 
     searchGUI(ToDoListManager parentComponent){
         this.parentComponent = parentComponent;
@@ -27,7 +30,8 @@ public class searchGUI extends JFrame {
         pack();
         setVisible(true);
         parentComponent.setEnabled(false);
-        setPreferredSize(new Dimension(500,500));
+        setPreferredSize(new Dimension(1000,500));
+        setLocationRelativeTo(null);
 
 
         //initialize the List Model for search JList
@@ -48,11 +52,17 @@ public class searchGUI extends JFrame {
     }
 
     private void addListener() {
-        backToMainButton.addActionListener(new ActionListener() {
+        backToMainButton.addActionListener(e -> {
+            parentComponent.setEnabled(true);
+            searchGUI.this.dispose();
+        });
+
+        this.addWindowListener(new WindowAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void windowClosing(WindowEvent e) {
                 parentComponent.setEnabled(true);
                 searchGUI.this.dispose();
+                super.windowClosing(e);
             }
         });
 

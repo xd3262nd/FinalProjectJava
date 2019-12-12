@@ -20,36 +20,25 @@ public class ToDoListManager extends JFrame{
     private JComboBox <Integer>priorityComboBox;
     private JComboBox <String> categoryComboBox;
     private JButton addButton;
-    private JLabel tasksNameLabel;
-    private JLabel descriptionLabel;
-    private JLabel priorityLabel;
-    private JLabel categoryLabel;
 
     private JPanel toDoListPanel;
-    private JButton completedTaskButton;
     private JButton showAllTasks;
-    private JLabel toDoLabel;
-    private JLabel completedList;
     private JComboBox <Integer> searchByPriorityComboBox;
     private JButton searchByPriority;
     private JButton searchByCategoryButton;
 
     private JPanel searchPanel;
     private JComboBox <String> searchByCategoryComboBox;
-    private JList <Task> searchList;
-    private JLabel searchListDescriptionLabel;
     private JButton quitButton;
     private JPanel controlPanel;
     private JButton editButton;
     private JTable todoTable;
     private JTable completeTable;
-    private JButton searchListButton;
 
     static final String ALL_TASKS = "Showing all incomplete task(s)";
     static final String NO_TASKS_FOUND = "No Matching task";
     static final String MATCHING_TASKS = "Matching Task(s)";
 
-    protected DefaultListModel<Task> searchListModel;
     DefaultComboBoxModel<Integer> priorityListModel;
     DefaultComboBoxModel <String> categoryListModel;
 
@@ -73,7 +62,7 @@ public class ToDoListManager extends JFrame{
 
         setTitle("To-Do Task Manager");
         setContentPane(mainPanel);
-        setPreferredSize(new Dimension(800,800));
+        setPreferredSize(new Dimension(800,500));
         pack();
         setVisible(true);
         setLocationRelativeTo(null);
@@ -84,18 +73,6 @@ public class ToDoListManager extends JFrame{
         configComboBox();
         addListener();
         configPopUpMenu();
-
-        //initialize the List Model for search JList
-        searchListModel = new DefaultListModel<>();
-        searchList.setModel(searchListModel);
-        //the program will show all incomplete tasks when it starts
-        searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-        //get every tasks from the Database through the controller
-       // List<Task> allData = controller.getAllTasks();
-        //call the method to loop through the List of result
-       // setListData(allData);
-        //makesure the user can only do single selection
-        searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         setUpTable();
 
@@ -154,6 +131,7 @@ public class ToDoListManager extends JFrame{
         completeTable.setAutoCreateRowSorter(true);
 
     }
+
     private void updateTable() {
 
         //refresh the Jtable with this method
@@ -172,14 +150,6 @@ public class ToDoListManager extends JFrame{
     }
 
     private void addListener() {
-//
-//        searchListButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//
-//                searchGUI searchAction = new searchGUI(ToDoListManager.this);
-//            }
-//        });
 
         priorityComboBox.addItemListener(e -> {
         });
@@ -287,8 +257,6 @@ public class ToDoListManager extends JFrame{
     //methods from the event Listener
 
     private void allTasksAction() {
-        //to get all tasks
-       // searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
 
         List<Task> allData = controller.getAllTasks();
         setListData(allData, ToDoListManager.ALL_TASKS);
@@ -298,11 +266,12 @@ public class ToDoListManager extends JFrame{
         //initialize the Task object
         Task selectedTask;
 
-        if(todoTable.getSelectedRow()<0){
+        if (todoTable.getSelectedRow()<0) {
             //makesure the user select a row before right clicked
             detailsDialog("Please select a row on the to-do list before proceed", "Select a Task",JOptionPane.ERROR_MESSAGE );
 
         } else {
+
             Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
             int selectedID = (int) data.get(0);
             selectedTask = controller.searchByID(selectedID);
@@ -311,35 +280,14 @@ public class ToDoListManager extends JFrame{
 
         }
 
-        //get the selected ID Number on the index 0
-//        int selectedID = (int) data.get(0);
-//        String taskName = (String)data.get(1);
-//        //called on the controller to delete Task from the database
-//        controller.deleteTask(selectedID);
-//        //refresh the table
-//        updateTable();
-//        List<Task> allData = controller.getAllTasks();
-//        setListData(allData);
-//        //inform the user that it has been deleted
-//        detailsDialog("Successfully deleted " + taskName, "Message", JOptionPane.INFORMATION_MESSAGE);
-
-//        if(searchList.getSelectedValue() == null){
-//            showMessageDialog("Please select one task from the table below to edit");
-//        }else{
-//            t = searchList.getSelectedValue();
-//            editTask(t);
-//        }
-
-
-
     }
 
     private void categorySearchAction() {
-        if(searchByCategoryComboBox.getSelectedIndex()<0){
+        if (searchByCategoryComboBox.getSelectedIndex()<0) {
             //printing error message when there is no selection on the combo box
 
             showMessageDialog("Please select a category to  search for");
-        }else{
+        } else {
             String categorySelected =searchByCategoryComboBox.getItemAt(searchByCategoryComboBox.getSelectedIndex());
             //search through the database to get the Tasks with the specific category
             List<Task> searchTask = controller.searchByCategory(categorySelected);
@@ -353,7 +301,7 @@ public class ToDoListManager extends JFrame{
         if(searchByPriorityComboBox.getSelectedIndex()<0){
             //printing error message when there is no selection on the combo box
             showMessageDialog("Please select a priority level");
-        }else{
+        } else {
             //setting up the variable to search on the Database
             int p = searchByPriorityComboBox.getItemAt(searchByPriorityComboBox.getSelectedIndex());
             List<Task> searchTask = controller.searchByPriority(p);
@@ -362,46 +310,6 @@ public class ToDoListManager extends JFrame{
         }
         searchByPriorityComboBox.setSelectedIndex(-1);
     }
-
-//    //TODO might need to delete this if i am using search GUI
-//    private void completedTaskAction() {
-//        searchList.setSelectedIndex(-1);
-//        //get the index for the selection
-//        int index = searchList.getSelectedIndex();
-//
-//        //checking for selection
-//        boolean checkIndex = false;
-//        //if the index is not being selected
-//        if(index<0){
-//            showMessageDialog("No tasks being selected");
-//        }else{
-//            //change the validation when there is a selected on the JList
-//            checkIndex = true;
-//        }
-//
-//        //when there is a selection
-//        if(checkIndex){
-//            //get the value
-//            Task value = searchList.getSelectedValue();
-//            //calling the controller to ge the Task by TaskID
-//            Task getTask = controller.searchByID(value.getTaskID());
-//            //setting up the completed date
-//            getTask.setDateCompleted(new Date());
-//            //set the status
-//            getTask.setStatus(Task.TaskStatus.COMPLETED);
-//            //update the selected task
-//            controller.updateTask(getTask);
-//
-//            showMessageDialog("Task has Updated");
-//            //refresh the Table acoordingly
-//            updateTable();
-//            searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-//            //Show the new list in the JList
-//            List<Task> allData = controller.getAllTasks();
-//            setListData(allData, ToDoListManager.ALL_TASKS);
-//
-//        }
-//    }
 
     private void addTaskAction() {
         //get the value to add as a new task
@@ -437,12 +345,11 @@ public class ToDoListManager extends JFrame{
             priorityComboBox.setSelectedIndex(-1);
             categoryComboBox.setSelectedIndex(-1);
             //refresh the table
-            if(!validateName){
+            if (!validateName) {
                 detailsDialog("Duplicate Task Name \nNo Task being added", "Error Message", JOptionPane.ERROR_MESSAGE);
-            }else{
+            } else {
                 updateTable();
                 detailsDialog("Added your task!", "Message", JOptionPane.INFORMATION_MESSAGE);
-                searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
                 List<Task> allData = controller.getAllTasks();
                 setListData(allData, ToDoListManager.ALL_TASKS);
             }
@@ -451,7 +358,7 @@ public class ToDoListManager extends JFrame{
 
     private void deleteCompleted() {
 
-        if(completeTable.getSelectedRow()<0){
+        if (completeTable.getSelectedRow()<0){
             //makesure the user select a row before right clicked
             detailsDialog("Please select a row before proceed", "Error",JOptionPane.ERROR_MESSAGE );
 
@@ -461,28 +368,33 @@ public class ToDoListManager extends JFrame{
             //get the selected ID Number on the index 0
             int selectedID = (int) data.get(0);
             String taskName = (String)data.get(1);
-            //called on the controller to delete Task from the database
-            controller.deleteTask(selectedID);
-            //refresh the table
-            updateTable();
-            List<Task> allData = controller.getAllTasks();
-            setListData(allData, ToDoListManager.ALL_TASKS);
-            //inform the user that it has been deleted
-            detailsDialog("Successfully deleted " + taskName, "Message", JOptionPane.INFORMATION_MESSAGE);
+
+            int confirmMessage = confirmationDialog("Are you sure you want to delete " + taskName + " ?", "Delete Confirmation", JOptionPane.YES_NO_OPTION);
+
+            if (confirmMessage == JOptionPane.YES_OPTION){
+                //called on the controller to delete Task from the database
+                controller.deleteTask(selectedID);
+                //refresh the table
+                updateTable();
+
+                //inform the user that it has been deleted
+                detailsDialog("Successfully deleted " + taskName, "Message", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                showMessageDialog("Delete has been cancelled");
+            }
+
+
         }
     }
 
     private void searchResultLookUp(List<Task> results) {
 
         //if there is nothing in the result
-        if(results==null||results.isEmpty()){
-            //searchListModel.clear();
-            //searchListDescriptionLabel.setText(ToDoListManager.NO_TASKS_FOUND);
+        if (results==null||results.isEmpty()) {
+
             showMessageDialog(ToDoListManager.NO_TASKS_FOUND);
         } else {
-            //if there is results on the list
-            //searchListDescriptionLabel.setText(ToDoListManager.MATCHING_TASKS);
-            //get the list printed on the JList
+
             setListData(results, ToDoListManager.MATCHING_TASKS);
         }
     }
@@ -491,7 +403,7 @@ public class ToDoListManager extends JFrame{
 
         String newDesc = getDescription();
 
-        if(newDesc!=null){
+        if (newDesc!=null) {
             //change the description on the Task Object
             t.setDescription(newDesc.trim());
             //update the Task object on Database too
@@ -500,10 +412,9 @@ public class ToDoListManager extends JFrame{
             //refresh the jtable and jlist
             updateTable();
             showMessageDialog( t.getName() + "'s description has been updated");
-            //searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-            String updateMsg = "Updated List";
+
             List<Task> allData = controller.getAllTasks();
-            setListData(allData, updateMsg);
+            setListData(allData, ToDoListManager.ALL_TASKS);
         }
 
     }
@@ -511,9 +422,9 @@ public class ToDoListManager extends JFrame{
     private String getDescription() {
         String newDescription;
 
-        while(true){
+        while (true) {
             newDescription = showInputDialog("Enter text for your new description");
-            if(newDescription!=null && !newDescription.isEmpty() && !newDescription.trim().isEmpty()){
+            if (newDescription!=null && !newDescription.isEmpty() && !newDescription.trim().isEmpty()) {
                 break;
             } else if (newDescription == null) {
                 int choose = confirmationDialog("Are you sure you want to cancel to edit the selected task's description?",
@@ -554,23 +465,30 @@ public class ToDoListManager extends JFrame{
     }
     private void deleteSelected() {
 
-        if(todoTable.getSelectedRow()<0){
+        if (todoTable.getSelectedRow()<0) {
             //error message
             detailsDialog("Please select a row before proceed", "Error",JOptionPane.ERROR_MESSAGE );
-        }else{
+        } else {
             //get the data from the selected row
             Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
 
             int selectedID = (int) data.get(0);
             String taskName = (String) data.get(1);
-            //delete the task on Database through controller
-            controller.deleteTask(selectedID);
-            //refresh the Jtable and JList
-            updateTable();
-            List<Task> allData = controller.getAllTasks();
-            setListData(allData, ToDoListManager.ALL_TASKS);
-            //inform the user the task has been deleted
-            detailsDialog("Successfully deleted " + taskName, "Message", JOptionPane.INFORMATION_MESSAGE);
+
+            int confirmMessage = confirmationDialog("Are you sure you want to delete " + taskName + " ?", "Delete Confirmation", JOptionPane.YES_NO_OPTION);
+
+            if (confirmMessage == JOptionPane.YES_OPTION){
+                //delete the task on Database through controller
+                controller.deleteTask(selectedID);
+                //refresh the Jtable and JList
+                updateTable();
+
+                //inform the user the task has been deleted
+                detailsDialog("Successfully deleted " + taskName, "Message", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                showMessageDialog("Delete has been cancelled");
+            }
+
         }
 
     }
@@ -578,9 +496,9 @@ public class ToDoListManager extends JFrame{
     private void completedSelected(){
 
         //get the data from the selected row
-        if(todoTable.getSelectedRow()<0){
+        if (todoTable.getSelectedRow()<0) {
             detailsDialog("Please select a row before proceed", "Error",JOptionPane.ERROR_MESSAGE );
-        }else{
+        } else {
             getSelectedValue();
         }
     }
@@ -600,28 +518,14 @@ public class ToDoListManager extends JFrame{
         controller.updateTask(getTask);
         updateTable();
 
-
-        //TODO not sure if I will need this
-//        searchListDescriptionLabel.setText(ToDoListManager.ALL_TASKS);
-//        List<Task> allData = controller.getAllTasks();
-//        setListData(allData);
-        //informing the user about the update
         detailsDialog("Updated this " + taskName +" as completed", "Message", JOptionPane.INFORMATION_MESSAGE);
 
     }
 
-    void setListData(List<Task> data, String msg) {
-        //set up to present the information into the JList with the Task data available
-//        searchListModel.clear();
-//        if(data != null){
-//            for(Task t : data){
-//                searchListModel.addElement(t);
-//            }
-//        }
+    void setListData (List<Task> data, String msg) {
 
         searchGUI searchResult = new searchGUI(ToDoListManager.this);
         searchResult.getList(data, msg);
-
 
     }
 
