@@ -22,9 +22,9 @@ public class searchGUI extends JFrame {
 
         setContentPane(searchPanel);
         pack();
+        setPreferredSize(new Dimension(700,700));
         setVisible(true);
         parentComponent.setEnabled(false);
-        setPreferredSize(new Dimension(1000,500));
         setLocationRelativeTo(null);
 
 
@@ -36,16 +36,18 @@ public class searchGUI extends JFrame {
         searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         addListener();
-
-
     }
 
     private void addListener() {
+        //button to return back to main screen
         backToMainButton.addActionListener(e -> {
+
             parentComponent.setEnabled(true);
             searchGUI.this.dispose();
         });
 
+        //makesure when user clicked on the close window button
+        //main screen will be enabled too
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -54,10 +56,8 @@ public class searchGUI extends JFrame {
                 super.windowClosing(e);
             }
         });
-
-
     }
-
+//return the search list on the search GUI
     public void getList(List<Task> data, String msg) {
         searchListModel.clear();
         if(data != null){
@@ -65,8 +65,6 @@ public class searchGUI extends JFrame {
                 searchListModel.addElement(t);
             }
         }
-
         searchListDescriptionLabel.setText(msg);
-
     }
 }

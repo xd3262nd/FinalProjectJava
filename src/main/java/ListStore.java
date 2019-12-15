@@ -13,13 +13,12 @@ public class ListStore {
         //this will run when the program started
         try(Connection conn = DriverManager.getConnection(databaseURI);
             Statement stat = conn.createStatement()){
-            //TODO google how to fix this to makesure is for the sqlite
             String createTable = "CREATE Table if not exists todos (taskName TEXT NOT NULL UNIQUE, description TEXT NOT NULL, priority INTEGER NOT NULL CHECK ( priority>=1 and priority<=5 ), category TEXT NOT Null Check(category = 'PERSONAL' or category ='WORK'), dateCreated INTEGER, dateCompleted INTEGER, status TEXT NOT NULL Check ( status = 'COMPLETED' or status='INCOMPLETE' ));";
 
             stat.executeUpdate(createTable);
 
-        }catch (SQLException s){
-            System.out.println(s);
+        } catch (SQLException s){
+            System.out.println("Error Message:" + s.getMessage());
         }
     }
 
@@ -63,13 +62,13 @@ public class ListStore {
 
         String sqlQuery = "SELECT rowid,* FROM todos WHERE status='COMPLETED'";
 
-        try(Connection conn = DriverManager.getConnection(dbURI);
+        try (Connection conn = DriverManager.getConnection(dbURI);
             Statement stat = conn.createStatement()){
             ResultSet rsIncomData = stat.executeQuery(sqlQuery);
 
             Vector<Vector> vectors = new Vector<>();
-
-            while(rsIncomData.next()){
+            //loop through the result
+            while (rsIncomData.next()){
                 String name = rsIncomData.getString("taskName");
                 int id = rsIncomData.getInt("rowid");
                 int prio = rsIncomData.getInt("priority");
@@ -86,7 +85,7 @@ public class ListStore {
 
             return vectors;
 
-        }catch (SQLException s){
+        } catch (SQLException s) {
             System.out.println(s);
 
             return null;
@@ -97,14 +96,15 @@ public class ListStore {
 
         List<Task> allRecords = new ArrayList<>();
 
-        try(Connection conn = DriverManager.getConnection(dbURI);
+        try (Connection conn = DriverManager.getConnection(dbURI);
              Statement stat = conn.createStatement()){
 
             String selectAllQ = ("SELECT rowid, * FROM todos WHERE status = 'INCOMPLETE' ORDER BY category, priority");
 
             ResultSet rsall = stat.executeQuery(selectAllQ);
 
-            while(rsall.next()){
+            //loop through the result
+            while (rsall.next()){
                 int id = rsall.getInt("rowid");
                 String name = rsall.getString("taskName");
                 String desc = rsall.getString("description");
@@ -134,7 +134,7 @@ public class ListStore {
 
 
 
-        }catch(SQLException s){
+        } catch(SQLException s){
             System.out.println(s.getMessage() + s);
             return null;
         }
@@ -193,7 +193,6 @@ public class ListStore {
              PreparedStatement ps = c.prepareStatement("SELECT rowid,* FROM todos WHERE rowid = ?")){
 
             ResultSet rs;
-
             ps.setInt(1, id);
 
             rs=ps.executeQuery();
@@ -328,29 +327,24 @@ public class ListStore {
 
             }
             return searchList;
-            
-            
-            
+
         }catch(SQLException se){
             System.out.println(se + se.getMessage());
             return null;
         }
-
     }
 
-
-    public static void deleteTask(int ID) {
-        try(Connection c= DriverManager.getConnection(dbURI);
+    public static void deleteTask (int ID) {
+        try (Connection c= DriverManager.getConnection(dbURI);
             PreparedStatement pst = c.prepareStatement("DELETE FROM todos WHERE rowid= ?")){
 
             pst.setInt(1, ID);
             pst.executeUpdate();
 
-        }catch(SQLException se){
-            System.out.println(se);
+        } catch(SQLException se){
+            System.out.println("Error Message: " + se.getMessage());
         }
 
     }
-
 
 }

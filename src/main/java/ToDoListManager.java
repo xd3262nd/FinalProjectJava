@@ -136,7 +136,6 @@ public class ToDoListManager extends JFrame{
 
         //refresh the Jtable with this method
         //To get the updated data
-
         Vector colNames = controller.getColNames();
 
 
@@ -151,15 +150,13 @@ public class ToDoListManager extends JFrame{
 
     private void addListener() {
 
+        //add task panel
         priorityComboBox.addItemListener(e -> {
         });
 
-        //this will be calling the controller to load all tasks and order by status first then the priority.
-        //Then it will print out in the JLIST on searchPanel and change the description on the searchLabel
-        showAllTasks.addActionListener(e -> allTasksAction());
-
         addButton.addActionListener(e -> addTaskAction());
 
+        //event listener for JTable -> todotable and completedtable
         todoTable.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -233,6 +230,7 @@ public class ToDoListManager extends JFrame{
 
         //listener for all the popup Menu Item
         //When the delete Menu Item is being selected
+        //on completed table
         deleteCompletedItem.addActionListener(e -> deleteCompleted());
 
         //when completed menu item (on ToDoTable) is being selected
@@ -244,18 +242,21 @@ public class ToDoListManager extends JFrame{
         //when the get more details menu item (ToDoTable) is being clicked
         getMoreDetails.addActionListener(Details -> moreDetailsSelected());
 
-        //completedTaskButton.addActionListener(e -> completedTaskAction());
-
+        //event listener on search panel
         searchByPriority.addActionListener(e -> prioritySearchAction());
 
         searchByCategoryButton.addActionListener(e -> categorySearchAction());
 
         editButton.addActionListener(e -> editTaskAction());
 
+        //this will be calling the controller to load all tasks and order by status first then the priority.
+        //Then it will print out in the JLIST on searchPanel and change the description on the searchLabel
+        showAllTasks.addActionListener(e -> allTasksAction());
+
+
     }
 
     //methods from the event Listener
-
     private void allTasksAction() {
 
         List<Task> allData = controller.getAllTasks();
@@ -266,32 +267,75 @@ public class ToDoListManager extends JFrame{
         //initialize the Task object
         Task selectedTask;
 
+        //makesure there is a row being selected on the todoTable
         if (todoTable.getSelectedRow()<0) {
             //makesure the user select a row before right clicked
             detailsDialog("Please select a row on the to-do list before proceed", "Select a Task",JOptionPane.ERROR_MESSAGE );
 
         } else {
-
+            //getting the data on vector object
             Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
+            //getting the Tasks ID
             int selectedID = (int) data.get(0);
+            //search by the ID
             selectedTask = controller.searchByID(selectedID);
+            //edit method
             editTask(selectedTask);
-
-
         }
+    }
 
+    private void editTask(Task t) {
+
+        String newDesc = getDescription();
+
+        if (newDesc!=null) {
+            //change the description on the Task Object
+            t.setDescription(newDesc.trim());
+            //update the Task object on Database too
+            controller.updateTask(t);
+
+            //refresh the jtable and jlist
+            updateTable();
+            showMessageDialog( t.getName() + "'s description has been updated");
+        }
+    }
+
+    private String getDescription() {
+        String newDescription;
+
+        //going through loop that making sure the user entered something for new description
+        //or cancel to edit
+        while (true) {
+
+            newDescription = showInputDialog("Enter text for your new description");
+            //check if there is anything being entered int he description text
+            if (newDescription!=null && !newDescription.isEmpty() && !newDescription.trim().isEmpty()) {
+                break;
+            } else if (newDescription == null) {
+                //making sure if the user is actually intended to cancel to edit
+                int choose = confirmationDialog("Are you sure you want to cancel to edit the selected task's description?",
+                        "Confirmation", JOptionPane.YES_NO_OPTION);
+                //if intended to cancel then close everything if it is not, then continue to loop over again
+                if(choose == JOptionPane.YES_OPTION){
+                    break;
+                }
+            } else {
+                //if no new description being entered then show this message and loop again the message
+                showMessageDialog("No input has been entered. Please enter your new description for the task");
+            }
+        }
+        return newDescription;
     }
 
     private void categorySearchAction() {
         if (searchByCategoryComboBox.getSelectedIndex()<0) {
             //printing error message when there is no selection on the combo box
-
             showMessageDialog("Please select a category to  search for");
         } else {
             String categorySelected =searchByCategoryComboBox.getItemAt(searchByCategoryComboBox.getSelectedIndex());
             //search through the database to get the Tasks with the specific category
             List<Task> searchTask = controller.searchByCategory(categorySelected);
-            //
+            //look over the array to print out the result
             searchResultLookUp(searchTask);
         }
         searchByCategoryComboBox.setSelectedIndex(-1);
@@ -305,7 +349,7 @@ public class ToDoListManager extends JFrame{
             //setting up the variable to search on the Database
             int p = searchByPriorityComboBox.getItemAt(searchByPriorityComboBox.getSelectedIndex());
             List<Task> searchTask = controller.searchByPriority(p);
-            //calling the method to search for Task
+            //look over the array to print out the result
             searchResultLookUp(searchTask);
         }
         searchByPriorityComboBox.setSelectedIndex(-1);
@@ -344,10 +388,14 @@ public class ToDoListManager extends JFrame{
             descriptionText.setText("");
             priorityComboBox.setSelectedIndex(-1);
             categoryComboBox.setSelectedIndex(-1);
-            //refresh the table
+            //makesure if there is any thing being added to the database
+            //if there is a duplicate then it will return false on validate name
+            //error message will be printed to the user
             if (!validateName) {
                 detailsDialog("Duplicate Task Name \nNo Task being added", "Error Message", JOptionPane.ERROR_MESSAGE);
             } else {
+                //if there is an update on the todoList
+                //user will be shown all of the todoList
                 updateTable();
                 detailsDialog("Added your task!", "Message", JOptionPane.INFORMATION_MESSAGE);
                 List<Task> allData = controller.getAllTasks();
@@ -371,7 +419,7 @@ public class ToDoListManager extends JFrame{
 
             int confirmMessage = confirmationDialog("Are you sure you want to delete " + taskName + " ?", "Delete Confirmation", JOptionPane.YES_NO_OPTION);
 
-            if (confirmMessage == JOptionPane.YES_OPTION){
+            if (confirmMessage == JOptionPane.YES_OPTION) {
                 //called on the controller to delete Task from the database
                 controller.deleteTask(selectedID);
                 //refresh the table
@@ -394,61 +442,17 @@ public class ToDoListManager extends JFrame{
 
             showMessageDialog(ToDoListManager.NO_TASKS_FOUND);
         } else {
-
             setListData(results, ToDoListManager.MATCHING_TASKS);
         }
     }
 
-    private void editTask(Task t) {
 
-        String newDesc = getDescription();
-
-        if (newDesc!=null) {
-            //change the description on the Task Object
-            t.setDescription(newDesc.trim());
-            //update the Task object on Database too
-            controller.updateTask(t);
-
-            //refresh the jtable and jlist
-            updateTable();
-            showMessageDialog( t.getName() + "'s description has been updated");
-
-            List<Task> allData = controller.getAllTasks();
-            setListData(allData, ToDoListManager.ALL_TASKS);
-        }
-
-    }
-
-    private String getDescription() {
-        String newDescription;
-
-        while (true) {
-            newDescription = showInputDialog("Enter text for your new description");
-            if (newDescription!=null && !newDescription.isEmpty() && !newDescription.trim().isEmpty()) {
-                break;
-            } else if (newDescription == null) {
-                int choose = confirmationDialog("Are you sure you want to cancel to edit the selected task's description?",
-                        "Confirmation", JOptionPane.YES_NO_OPTION);
-                if(choose == JOptionPane.YES_OPTION){
-                    break;
-                }
-            } else {
-                showMessageDialog("No input has been entered. Please enter your new description for the task");
-            }
-        }
-
-        return newDescription;
-
-
-
-
-    }
 
     private void moreDetailsSelected() {
 
-        if(todoTable.getSelectedRow()<0){
+        if (todoTable.getSelectedRow()<0) {
             detailsDialog("Please select a row before proceed", "Error",JOptionPane.ERROR_MESSAGE );
-        }else{
+        } else {
             //get the date from the selected row
             Vector data = todoModel.getDataVector().elementAt(todoTable.getSelectedRow());
 

@@ -62,17 +62,10 @@ public class ListController {
 
     protected List<Task> searchByCategory(String category) {
 
-
         return ListStore.searchByCategory(category);
     }
-
-
     public void deleteTask(int selectedID) {
         ListStore.deleteTask(selectedID);
     }
 
-
-
-
-//closing
 }
