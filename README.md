@@ -22,7 +22,7 @@ Features on the `ToDo Table` and `Completed Table` :
 - Able to right click on the `ToDo Table` to either **delete** or marked as **completed** as well as show the **description**
 - On the `Completed Table` you are able to right click and **delete** the selected task 
 
-`searhGUI`:
+**`searhGUI`:**
 - This will be show up when you added a new task, do `SearchByPriority` or `SearchByCategory`, `ShowAllIncompleteTasks` and `EditDescriptionForSelectedTask`
 
 *Bugs/Problems:*
