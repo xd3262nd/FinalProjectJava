@@ -2,8 +2,10 @@ Task Manager Program
 ====================
 
 This program is mainly to deal with your `to-do list`. It is a very intuitive applications and easy to navigate around. 
-This application contains two GUI window: `ToDoListManager` and `searchGUI`
+This application contains two GUI window: `ToDoListManager` and `searchGUI`.
+
 Database is stored under the `ListStore` and is being controlled through `ListController`.
+
 `Task` class is being created to handled the Task object.
 
 There are several features as listed below: 
