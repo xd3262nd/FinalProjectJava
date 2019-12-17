@@ -21,8 +21,9 @@ public class searchGUI extends JFrame {
         setTitle("Search List");
 
         setContentPane(searchPanel);
-        pack();
         setPreferredSize(new Dimension(700,700));
+        pack();
+
         setVisible(true);
         parentComponent.setEnabled(false);
         setLocationRelativeTo(null);
